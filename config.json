@@ -1,0 +1,30 @@
+{
+  "industries": [
+    {
+      "name": "Renewable Energy",
+      "search_terms": ["solar energy", "solar trackers", "utility solar", "energy storage", "solar project"]
+    },
+    {
+      "name": "Health & Wellness",
+      "search_terms": ["healthcare innovation", "health technology", "wellness industry", "hospital systems"]
+    },
+    {
+      "name": "Marketing Tech",
+      "search_terms": ["martech", "marketing technology", "digital advertising", "audience data"]
+    },
+    {
+      "name": "Tourism",
+      "search_terms": ["tourism industry", "destination marketing", "travel trends"]
+    },
+    {
+      "name": "Fintech",
+      "search_terms": ["fintech", "digital banking", "banking technology", "financial services"]
+    },
+    {
+      "name": "Artificial Intelligence",
+      "search_terms": ["artificial intelligence industry", "AI tools", "generative AI", "AI regulation", "large language models"]
+    }
+  ],
+  "articles_per_industry": 4,
+  "days_back": 7
+}
