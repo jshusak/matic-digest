@@ -191,8 +191,9 @@ If NOT relevant, respond with ONLY:
 
 # ── Named account tracking ────────────────────────────────────────────────────
 def fetch_account_news(account):
-    """Fetch recent news about a named account by exact company name."""
-    query = f'"{account["name"]}"'
+    """Fetch recent news about a named account by exact company name (+ any aliases)."""
+    names = [account["name"]] + account.get("aliases", [])
+    query = " OR ".join(f'"{n}"' for n in names)
     from_date = (datetime.now() - timedelta(days=config.get("days_back", 7))).strftime("%Y-%m-%d")
     params = {
         "q":        query,

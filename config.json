@@ -73,6 +73,7 @@
     },
     {
       "name": "Ørsted",
+      "aliases": ["Orsted"],
       "industry": "Renewable Energy",
       "type": "prospect",
       "context": "Early research stage targeting their US branch. No outreach has been made yet — any email draft should be purely introductory."
