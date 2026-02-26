@@ -30,28 +30,58 @@
   "days_back": 7,
   "accounts": [
     {
-      "name": "SunPower",
+      "name": "Nextpower",
       "industry": "Renewable Energy",
-      "type": "prospect",
-      "context": "Solar installer undergoing major brand transition amid market consolidation"
+      "type": "client",
+      "context": "Matic rebranded them from Nextracker and built their new website. The relationship has gone quiet and we are looking for a natural re-engagement moment."
     },
     {
-      "name": "Oura",
+      "name": "Teambuildr",
       "industry": "Health & Wellness",
       "type": "client",
-      "context": "Wearable health tech company expanding into women's health and AI-driven insights"
+      "context": "Matic built their website and helped with strategic thinking on a new product. Looking to deepen the relationship and find follow-on work."
     },
     {
-      "name": "TD Bank",
-      "industry": "Fintech",
-      "type": "prospect",
-      "context": "Undergoing brand refresh amid digital transformation and competitive pressure from fintechs"
+      "name": "GoDaddy",
+      "industry": "Marketing Tech",
+      "type": "client",
+      "context": "Matic redesigned the website for GoDaddy's registry division and built ownit.nyc. Looking to expand beyond these projects into broader brand or digital work."
     },
     {
-      "name": "Marriott",
+      "name": "Mogl",
+      "industry": "Marketing Tech",
+      "type": "client",
+      "context": "Matic rebranded them from Ventura Growth and redesigned their full web experience. Relationship has been quiet since and we are looking to re-engage."
+    },
+    {
+      "name": "Azira",
+      "industry": "Marketing Tech",
+      "type": "client",
+      "context": "Matic redesigned their website. Relationship has gone quiet since and we are looking for a reason to re-engage."
+    },
+    {
+      "name": "Forefront Power",
+      "industry": "Renewable Energy",
+      "type": "client",
+      "context": "Active engagement: currently redesigning their website and building out Centrana, a new branded product with its own site."
+    },
+    {
+      "name": "Omaha Zoo",
       "industry": "Tourism",
       "type": "prospect",
-      "context": "Global hospitality brand navigating post-pandemic repositioning and loyalty program evolution"
+      "context": "Matic recently pitched them on a major website redesign. No response yet but the opportunity is still open."
+    },
+    {
+      "name": "Ørsted",
+      "industry": "Renewable Energy",
+      "type": "prospect",
+      "context": "Early research stage targeting their US branch. No outreach has been made yet — any email draft should be purely introductory."
+    },
+    {
+      "name": "Denver Museum of Nature and Science",
+      "industry": "Tourism",
+      "type": "prospect",
+      "context": "Early research stage. Their website is dated and Matic sees a strong website redesign opportunity. No outreach has been made yet — any email draft should be purely introductory."
     }
   ]
 }
