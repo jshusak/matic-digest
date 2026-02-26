@@ -75,6 +75,59 @@ def fetch_from_rss(feed_url):
     return articles
 
 
+# ── Deduplication ─────────────────────────────────────────────────────────────
+def deduplicate_articles(candidates):
+    """Remove articles whose titles are 70%+ similar to one already seen."""
+    seen, unique = [], []
+    for article in candidates:
+        title = article.get("title", "").lower().strip()
+        title_clean = "".join(c for c in title if c.isalnum() or c.isspace())
+        words_a = set(title_clean.split())
+        is_dup = False
+        for seen_words in seen:
+            if words_a and seen_words:
+                overlap = len(words_a & seen_words) / max(len(words_a), len(seen_words))
+                if overlap >= 0.7:
+                    is_dup = True
+                    break
+        if not is_dup:
+            seen.append(words_a)
+            unique.append(article)
+    return unique
+
+
+# ── Date formatting ────────────────────────────────────────────────────────────
+def format_date(date_str):
+    """Return a human-readable relative date from a publishedAt string."""
+    if not date_str:
+        return ""
+    from datetime import timezone
+    import email.utils
+    dt = None
+    try:
+        dt = datetime.strptime(date_str[:19], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
+    except Exception:
+        pass
+    if dt is None:
+        try:
+            dt = email.utils.parsedate_to_datetime(date_str).astimezone(timezone.utc)
+        except Exception:
+            pass
+    if dt is None:
+        return ""
+    now = datetime.now(timezone.utc)
+    days = (now - dt).days
+    if days == 0:
+        hours = (now - dt).seconds // 3600
+        return "Today" if hours == 0 else f"{hours}h ago"
+    elif days == 1:
+        return "Yesterday"
+    elif days < 7:
+        return f"{days}d ago"
+    else:
+        return dt.strftime("%b %d")
+
+
 # ── STEP 2: Have Claude evaluate relevance and generate structured output ─────
 def evaluate_and_summarize(article, industry_name):
     prompt = f"""You are a senior strategist at Matic Digital, a full-service branding, design, and technology agency.
@@ -88,8 +141,8 @@ Matic Digital's four service areas:
 
 Evaluate this article. Is it genuinely relevant to the {industry_name} industry?
 
-RELEVANT = meaningful news, trends, innovation, regulation, market shifts, or business developments in {industry_name}.
-NOT RELEVANT = tangentially related, off-topic, political news unrelated to the industry, too generic, or clickbait.
+RELEVANT = meaningful news, trends, innovation, regulation, market shifts, or business developments directly in the {industry_name} industry.
+NOT RELEVANT = reject any of the following without exception: stock/share price movements, investment analyst ratings, obituaries, awards or scholarship announcements, local human-interest stories, sports scores, celebrity gossip, viral social media content, political news not directly tied to {industry_name} regulation or policy, generic science/research with no clear industry application, or anything that would only loosely connect to {industry_name} with a stretch of imagination.
 
 Article:
 Title: {article['title']}
@@ -138,8 +191,7 @@ If NOT relevant, respond with ONLY:
 # ── STEP 3: Build the HTML digest page ───────────────────────────────────────
 def generate_html(all_industry_articles):
     date_str  = datetime.now().strftime("%B %d, %Y")
-    month_day = datetime.now().strftime("%b %d")
-    year      = datetime.now().strftime("%Y")
+    week_of   = datetime.now().strftime("Week of %B %d, %Y")
     total     = sum(len(ind["articles"]) for ind in all_industry_articles)
 
     accent_colors = {
@@ -165,37 +217,47 @@ def generate_html(all_industry_articles):
         num    = str(i + 1).zfill(2)
         cards  = ""
 
-        for article in ind["articles"]:
-            if article.get("urlToImage"):
-                img_html = f'<img class="card-img" src="{article["urlToImage"]}" alt="" onerror="this.style.display=\'none\'">'
-            else:
-                img_html = f'<div class="card-img-accent" style="background:{accent};"></div>'
-
-            tp_html = "".join(f"<li>{pt}</li>" for pt in article.get("talking_points", []))
-
-            cards += f"""
-            <div class="card" style="--accent:{accent};">
-              {img_html}
+        if not ind["articles"]:
+            cards = """
+            <div class="card empty-card">
               <div class="card-body">
-                <div class="source">{article['source']['name']}</div>
-                <div class="headline">{article['title']}</div>
-                <div class="summary">{article.get('summary', '')}</div>
-
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">{article.get('agency_relevance', '')}</div>
-                </div>
-
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points">{tp_html}</ul>
-                </div>
-
-                <a href="{article['url']}" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
+                <div class="empty-msg">Nothing noteworthy surfaced this week.</div>
               </div>
             </div>"""
+        else:
+            for article in ind["articles"]:
+                if article.get("urlToImage"):
+                    img_html = f'<img class="card-img" src="{article["urlToImage"]}" alt="" onerror="this.style.display=\'none\'">'
+                else:
+                    img_html = f'<div class="card-img-accent" style="background:{accent};"></div>'
+
+                tp_html   = "".join(f"<li>{pt}</li>" for pt in article.get("talking_points", []))
+                timestamp = format_date(article.get("publishedAt", ""))
+                ts_html   = f'<span class="timestamp">{timestamp}</span>' if timestamp else ""
+
+                cards += f"""
+                <div class="card" style="--accent:{accent};">
+                  {img_html}
+                  <div class="card-body">
+                    <div class="source">{article['source']['name']}{ts_html}</div>
+                    <div class="headline">{article['title']}</div>
+                    <div class="summary">{article.get('summary', '')}</div>
+
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">{article.get('agency_relevance', '')}</div>
+                    </div>
+
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points">{tp_html}</ul>
+                    </div>
+
+                    <a href="{article['url']}" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
+                </div>"""
 
         sections += f"""
         <section id="{anchor}" style="--accent:{accent};">
@@ -428,6 +490,18 @@ def generate_html(all_industry_articles):
       text-transform: uppercase;
       letter-spacing: 1.2px;
       color: var(--ink-3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }}
+    .timestamp {{
+      font-size: 9px;
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+      color: var(--ink-3);
+      flex-shrink: 0;
     }}
     .headline {{
       font-size: 15px;
@@ -494,6 +568,24 @@ def generate_html(all_industry_articles):
     }}
     .read-more:hover {{ gap: 10px; }}
 
+    /* ── Empty card ── */
+    .empty-card {{
+      grid-column: 1 / -1;
+      background: transparent;
+      box-shadow: none;
+      border: 1px dashed var(--rule);
+    }}
+    .empty-card:hover {{
+      box-shadow: none;
+      transform: none;
+    }}
+    .empty-msg {{
+      font-size: 13px;
+      color: var(--ink-3);
+      padding: 32px 22px;
+      font-style: italic;
+    }}
+
     /* ── Footer ── */
     .site-footer {{
       border-top: 1px solid var(--rule);
@@ -503,10 +595,24 @@ def generate_html(all_industry_articles):
       justify-content: space-between;
       background: var(--surface);
     }}
+    .footer-left {{
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }}
     .footer-logo {{
       font-size: 13px;
       font-weight: 600;
       color: var(--ink);
+    }}
+    .footer-divider {{
+      width: 1px;
+      height: 14px;
+      background: var(--rule);
+    }}
+    .footer-tagline {{
+      font-size: 11px;
+      color: var(--ink-3);
     }}
     .footer-meta {{
       font-size: 11px;
@@ -564,24 +670,29 @@ def generate_html(all_industry_articles):
         display: none;
       }}
       .site-nav {{
-        padding: 0 20px;
+        padding: 0 16px;
       }}
       .site-nav a {{
-        padding: 0 12px;
+        padding: 0 10px;
         font-size: 9px;
+        height: 44px;
       }}
       .site-nav a:first-child {{
         padding-left: 0;
       }}
       .nav-action {{
-        padding-left: 16px;
+        padding-left: 12px;
+      }}
+      .notebook-btn .btn-label {{
+        display: none;
       }}
       .notebook-btn {{
-        font-size: 9px;
-        padding: 8px 12px;
+        font-size: 14px;
+        padding: 8px 10px;
+        letter-spacing: 0;
       }}
       main {{
-        padding: 36px 20px 56px;
+        padding: 32px 16px 56px;
       }}
       .section-header {{
         flex-direction: column;
@@ -596,33 +707,39 @@ def generate_html(all_industry_articles):
       }}
       .grid {{
         grid-template-columns: 1fr;
-        gap: 14px;
+        gap: 12px;
       }}
       .card-img {{
-        height: 200px;
+        height: 180px;
       }}
       .card-body {{
-        padding: 18px 18px 20px;
+        padding: 16px 16px 20px;
         gap: 12px;
       }}
       .headline {{
-        font-size: 16px;
+        font-size: 15px;
       }}
       .summary {{
-        font-size: 14px;
+        font-size: 13px;
       }}
       .meta-text {{
-        font-size: 13px;
+        font-size: 12px;
       }}
       .talking-points li {{
-        font-size: 13px;
+        font-size: 12px;
       }}
       .site-footer {{
-        padding: 24px 20px;
+        padding: 24px 16px;
         flex-direction: column;
         align-items: flex-start;
-        gap: 6px;
+        gap: 8px;
       }}
+      .footer-left {{
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }}
+      .footer-divider {{ display: none; }}
     }}
   </style>
 </head>
@@ -631,7 +748,7 @@ def generate_html(all_industry_articles):
 <header class="site-header">
   <div class="brand">
     <h1>Matic Digest</h1>
-    <p>Industry Intelligence · Internal</p>
+    <p>{week_of} · Industry Intelligence · Internal</p>
   </div>
   <div class="header-stats">
     <div class="stat">
@@ -643,11 +760,6 @@ def generate_html(all_industry_articles):
       <div class="stat-value">{len(all_industry_articles)}</div>
       <div class="stat-label">Industries</div>
     </div>
-    <div class="stat-divider"></div>
-    <div class="stat">
-      <div class="stat-value">{month_day}</div>
-      <div class="stat-label">{year}</div>
-    </div>
   </div>
 </header>
 
@@ -656,7 +768,7 @@ def generate_html(all_industry_articles):
     {nav_links}
   </div>
   <div class="nav-action">
-    <button class="notebook-btn" onclick="copyURLs(this)">↗ Copy URLs for NotebookLM</button>
+    <button class="notebook-btn" onclick="copyURLs(this)">↗<span class="btn-label"> Copy URLs for NotebookLM</span></button>
   </div>
 </nav>
 
@@ -665,8 +777,12 @@ def generate_html(all_industry_articles):
 </main>
 
 <footer class="site-footer">
-  <div class="footer-logo">Matic Digital</div>
-  <div class="footer-meta">Industry Digest · {date_str} · Internal Use Only</div>
+  <div class="footer-left">
+    <div class="footer-logo">Matic Digital</div>
+    <div class="footer-divider"></div>
+    <div class="footer-tagline">Weekly Industry Intelligence</div>
+  </div>
+  <div class="footer-meta">{week_of} · Internal Use Only</div>
 </footer>
 
 <script>
@@ -843,7 +959,8 @@ def main():
             rss = fetch_from_rss(feed_url)
             print(f"    + {len(rss)} articles from RSS ({feed_url})")
             candidates.extend(rss)
-        print(f"    Pulled {len(candidates)} total candidates. Evaluating relevance...")
+        candidates = deduplicate_articles(candidates)
+        print(f"    Pulled {len(candidates)} unique candidates. Evaluating relevance...")
 
         good_articles = []
         for article in candidates:
