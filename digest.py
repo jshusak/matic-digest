@@ -714,13 +714,13 @@ INDUSTRY_EMOJI = {
 }
 
 CTA_VARIANTS = [
-    "The full breakdown is one click away — {url}",
-    "Dig into the details in this week's full digest → {url}",
-    "All 24 articles, fully briefed. Worth the scroll → {url}",
-    "More signal, less noise — full digest here: {url}",
-    "Everything above, plus the details that didn't fit. {url}",
-    "Pull up the full digest when you get a minute → {url}",
-    "That's the week in preview. Full read here: {url}",
+    "That's the week. Full breakdown is one click away.",
+    "Dig deeper in the full digest — it's worth the scroll.",
+    "More signal, less noise. The rest is in the digest.",
+    "Everything above plus the details that didn't fit — hit the button.",
+    "That's your preview. Full read is right below.",
+    "Now you're caught up. The full digest has the rest.",
+    "Good week to pay attention. Full digest below.",
 ]
 
 def generate_slack_briefing(all_industry_articles, page_url):
@@ -731,7 +731,7 @@ def generate_slack_briefing(all_industry_articles, page_url):
         for a in ind["articles"]:
             articles_text += f"  - {a['title']}: {a.get('summary', '')}\n"
 
-    cta = random.choice(CTA_VARIANTS).format(url=page_url)
+    cta = random.choice(CTA_VARIANTS)
 
     # Build emoji map string for the prompt
     emoji_map = "\n".join(f"  {name}: {emoji}" for name, emoji in INDUSTRY_EMOJI.items())
