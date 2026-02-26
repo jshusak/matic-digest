@@ -245,6 +245,10 @@ Description: {article.get("description", "")}
 
 First: is this article GENUINELY about {account["name"]} as a primary subject? Not a passing mention, not a different company with a similar name — it must be meaningfully about them.
 
+Automatically mark as NOT relevant if the article is primarily about: stock price movements, analyst buy/sell ratings, earnings reports, investment recommendations, obituaries, awards or rankings lists, sports, celebrity gossip, or any story where {account["name"]} is only incidentally mentioned.
+
+Only mark as relevant if the article covers something substantive — a product launch, partnership, rebrand, leadership change, strategic shift, new market entry, or meaningful business development that a branding or design agency would find genuinely useful as a conversation starter.
+
 If YES, respond with ONLY this JSON:
 {{
   "relevant": true,
