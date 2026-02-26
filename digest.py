@@ -704,12 +704,37 @@ def wait_for_deployment(url, timeout=300):
 
 
 # ── STEP 5: Generate Morning Brew-style Slack briefing ───────────────────────
+INDUSTRY_EMOJI = {
+    "Renewable Energy":      "⚡",
+    "Health & Wellness":     "🩺",
+    "Marketing Tech":        "🎯",
+    "Tourism":               "✈️",
+    "Fintech":               "💳",
+    "Artificial Intelligence": "🤖",
+}
+
+CTA_VARIANTS = [
+    "The full breakdown is one click away — {url}",
+    "Dig into the details in this week's full digest → {url}",
+    "All 24 articles, fully briefed. Worth the scroll → {url}",
+    "More signal, less noise — full digest here: {url}",
+    "Everything above, plus the details that didn't fit. {url}",
+    "Pull up the full digest when you get a minute → {url}",
+    "That's the week in preview. Full read here: {url}",
+]
+
 def generate_slack_briefing(all_industry_articles, page_url):
+    import random
     articles_text = ""
     for ind in all_industry_articles:
         articles_text += f"\n{ind['name'].upper()}\n"
         for a in ind["articles"]:
             articles_text += f"  - {a['title']}: {a.get('summary', '')}\n"
+
+    cta = random.choice(CTA_VARIANTS).format(url=page_url)
+
+    # Build emoji map string for the prompt
+    emoji_map = "\n".join(f"  {name}: {emoji}" for name, emoji in INDUSTRY_EMOJI.items())
 
     prompt = f"""You are writing the weekly Matic Digest briefing for Slack.
 
@@ -724,14 +749,21 @@ This briefing goes to the internal strategy team before their week starts.
 Write a Morning Brew-style executive briefing covering this week's industry news.
 Tone: smart, conversational, a little sharp — like a well-informed colleague catching you up before a Monday meeting. Not corporate. Not stiff.
 
-Rules:
-- Open with a single punchy line that sets the tone for the week
-- One short paragraph per industry (2-3 sentences max)
-- Lead each industry section with the industry name in bold: *Renewable Energy*
-- Weave in the most interesting detail AND hint at which Matic service area it connects to — naturally, not as a pitch
-- Close with one short line pointing to the full digest
-- Use Slack markdown: *bold*, _italic_ where it adds clarity
-- No bullet points — flowing prose only
+FORMAT RULES:
+- Open with a single punchy line that sets the tone for the week (no industry prefix, just a strong opener)
+- Then one section per industry, structured exactly like this:
+
+[emoji] *Industry Name*
+• One sentence on the most interesting story — weave in which Matic service area it connects to naturally
+• One sentence on another notable story or trend
+• (add a third bullet only if there's a genuinely distinct third angle worth calling out)
+
+Use these emojis per industry:
+{emoji_map}
+
+- End with this exact line (do not change it): {cta}
+- Use Slack markdown: *bold*, _italic_ where it adds punch
+- Keep bullets tight — one sentence each, no padding
 - Total length: readable in under 90 seconds
 
 This week's articles:
@@ -739,7 +771,7 @@ This week's articles:
 
     message = claude.messages.create(
         model="claude-haiku-4-5-20251001",
-        max_tokens=900,
+        max_tokens=1200,
         messages=[{"role": "user", "content": prompt}]
     )
     return message.content[0].text.strip()
