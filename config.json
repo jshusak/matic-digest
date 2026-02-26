@@ -27,5 +27,31 @@
     }
   ],
   "articles_per_industry": 4,
-  "days_back": 7
+  "days_back": 7,
+  "accounts": [
+    {
+      "name": "SunPower",
+      "industry": "Renewable Energy",
+      "type": "prospect",
+      "context": "Solar installer undergoing major brand transition amid market consolidation"
+    },
+    {
+      "name": "Oura",
+      "industry": "Health & Wellness",
+      "type": "client",
+      "context": "Wearable health tech company expanding into women's health and AI-driven insights"
+    },
+    {
+      "name": "TD Bank",
+      "industry": "Fintech",
+      "type": "prospect",
+      "context": "Undergoing brand refresh amid digital transformation and competitive pressure from fintechs"
+    },
+    {
+      "name": "Marriott",
+      "industry": "Tourism",
+      "type": "prospect",
+      "context": "Global hospitality brand navigating post-pandemic repositioning and loyalty program evolution"
+    }
+  ]
 }

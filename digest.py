@@ -25,6 +25,7 @@ claude = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
 ARTICLES_TARGET = config["articles_per_industry"]
 ARTICLES_FETCH  = 12
+ACCOUNTS_FETCH  = 5
 
 
 # ── STEP 1: Fetch articles from NewsAPI ──────────────────────────────────────
@@ -188,8 +189,91 @@ If NOT relevant, respond with ONLY:
         return {"relevant": False}
 
 
+# ── Named account tracking ────────────────────────────────────────────────────
+def fetch_account_news(account):
+    """Fetch recent news about a named account by exact company name."""
+    query = f'"{account["name"]}"'
+    from_date = (datetime.now() - timedelta(days=config.get("days_back", 7))).strftime("%Y-%m-%d")
+    params = {
+        "q":        query,
+        "from":     from_date,
+        "sortBy":   "relevancy",
+        "language": "en",
+        "pageSize": ACCOUNTS_FETCH,
+        "apiKey":   NEWS_API_KEY,
+    }
+    try:
+        r = requests.get("https://newsapi.org/v2/everything", params=params, timeout=10)
+        data = r.json()
+        if data.get("status") != "ok":
+            return []
+        articles = data.get("articles", [])
+        for a in articles:
+            if not isinstance(a.get("source"), dict):
+                a["source"] = {"name": "Unknown"}
+            elif not a["source"].get("name"):
+                a["source"]["name"] = "Unknown"
+        return articles
+    except Exception as e:
+        print(f"    ⚠ Account fetch error ({account['name']}): {e}")
+        return []
+
+
+def evaluate_account_article(article, account):
+    """Evaluate if an article is genuinely about this account and generate email/note."""
+    is_prospect = account.get("type", "prospect").lower() == "prospect"
+    context_line = f"Context: {account['context']}" if account.get("context") else ""
+
+    if is_prospect:
+        output_spec = '''"outreach_email": {{
+    "subject": "A specific, natural subject line referencing the news — not clickbait, not generic",
+    "body": "3-4 sentences. From a Matic Digital strategist to a senior contact at {name}. Reference the news. Make one sharp, specific observation about what it signals. Suggest a brief conversation naturally. Sound like a smart colleague, not a salesperson. No fluff, no pitch."
+  }}'''.format(name=account["name"])
+    else:
+        output_spec = '"relationship_note": "1-2 sentences. A sharp talking point a Matic account manager can use in their next check-in with {name}. Reference the news. Connect it to something the team is likely working on. Conversational, not formal."'.format(name=account["name"])
+
+    prompt = f"""You are a senior strategist at Matic Digital, a full-service branding, design, and technology agency.
+
+You are reviewing a news article to see if it is genuinely and substantively about {account["name"]}, a company Matic is tracking.
+{context_line}
+
+Article:
+Title: {article["title"]}
+Source: {article["source"]["name"]}
+Description: {article.get("description", "")}
+
+First: is this article GENUINELY about {account["name"]} as a primary subject? Not a passing mention, not a different company with a similar name — it must be meaningfully about them.
+
+If YES, respond with ONLY this JSON:
+{{
+  "relevant": true,
+  "summary": "1-2 sentences. What happened and why it matters for {account["name"]}.",
+  "strategic_angle": "1-2 sentences. What does this signal from Matic's perspective — what might this company now need?",
+  {output_spec}
+}}
+
+If NOT genuinely about {account["name"]}, respond with ONLY:
+{{"relevant": false}}"""
+
+    try:
+        message = claude.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=700,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        text = message.content[0].text.strip()
+        start = text.find("{")
+        end   = text.rfind("}") + 1
+        if start != -1 and end > start:
+            return json.loads(text[start:end])
+        return {"relevant": False}
+    except Exception as e:
+        print(f"    ⚠ Account evaluation error ({account['name']}): {e}")
+        return {"relevant": False}
+
+
 # ── STEP 3: Build the HTML digest page ───────────────────────────────────────
-def generate_html(all_industry_articles):
+def generate_html(all_industry_articles, account_hits=[]):
     date_str  = datetime.now().strftime("%B %d, %Y")
     week_of   = datetime.now().strftime("Week of %B %d, %Y")
     total     = sum(len(ind["articles"]) for ind in all_industry_articles)
@@ -271,6 +355,69 @@ def generate_html(all_industry_articles):
         </section>"""
 
     urls_js = json.dumps(all_urls)
+
+    # ── On Our Radar section ──────────────────────────────────────────────────
+    radar_html = ""
+    if account_hits:
+        radar_cards = ""
+        for i, hit in enumerate(account_hits):
+            acct    = hit["account"]
+            art     = hit["article"]
+            is_prospect = acct.get("type", "prospect").lower() == "prospect"
+            badge_cls   = "badge-prospect" if is_prospect else "badge-client"
+            badge_label = "Prospect" if is_prospect else "Client"
+            ts          = format_date(art.get("publishedAt", ""))
+            ts_str      = f" · {ts}" if ts else ""
+            email_id    = f"email-body-{i}"
+
+            if is_prospect and hit.get("outreach_email"):
+                em      = hit["outreach_email"]
+                subject = em.get("subject", "").replace('"', "&quot;")
+                body    = em.get("body", "").replace("<", "&lt;").replace(">", "&gt;")
+                action_block = f"""
+                <div class="email-block">
+                  <div class="email-block-header">
+                    <div class="radar-meta-label">Outreach draft</div>
+                    <button class="copy-email-btn" onclick="copyEmail(this, '{subject}', '{email_id}')">Copy</button>
+                  </div>
+                  <div class="email-subject">Subject: {subject}</div>
+                  <div class="email-body" id="{email_id}">{body}</div>
+                </div>"""
+            elif not is_prospect and hit.get("relationship_note"):
+                action_block = f"""
+                <div class="radar-meta-block client-block">
+                  <div class="radar-meta-label">Relationship talking point</div>
+                  <div class="radar-meta-text">{hit["relationship_note"]}</div>
+                </div>"""
+            else:
+                action_block = ""
+
+            radar_cards += f"""
+            <div class="radar-card">
+              <div class="radar-card-top">
+                <div class="account-name">{acct["name"]}</div>
+                <span class="account-badge {badge_cls}">{badge_label}</span>
+              </div>
+              <div>
+                <div class="radar-article-source">{art["source"]["name"]}{ts_str}</div>
+                <div class="radar-article-headline">{art["title"]}</div>
+              </div>
+              <div class="radar-summary">{hit["summary"]}</div>
+              <div class="radar-meta-block">
+                <div class="radar-meta-label">Strategic angle</div>
+                <div class="radar-meta-text">{hit["strategic_angle"]}</div>
+              </div>
+              {action_block}
+            </div>"""
+
+        radar_html = f"""
+        <div class="radar-section">
+          <div class="radar-header">
+            <div class="radar-title">🎯 On Our Radar</div>
+            <div class="radar-meta">{len(account_hits)} account{"s" if len(account_hits) != 1 else ""} in the news this week</div>
+          </div>
+          <div class="radar-grid">{radar_cards}</div>
+        </div>"""
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -568,6 +715,171 @@ def generate_html(all_industry_articles):
     }}
     .read-more:hover {{ gap: 10px; }}
 
+    /* ── On Our Radar ── */
+    .radar-section {{
+      margin-bottom: 80px;
+      padding: 36px 40px;
+      background: var(--surface);
+      border-radius: 4px;
+      border-left: 4px solid #d97706;
+      box-shadow: var(--shadow);
+    }}
+    .radar-header {{
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }}
+    .radar-title {{
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      color: var(--ink);
+    }}
+    .radar-meta {{
+      font-size: 11px;
+      color: var(--ink-3);
+    }}
+    .radar-grid {{
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      align-items: start;
+    }}
+    .radar-card {{
+      background: var(--bg);
+      border-radius: 3px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      border: 1px solid var(--rule);
+    }}
+    .radar-card-top {{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }}
+    .account-name {{
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.2px;
+    }}
+    .account-badge {{
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }}
+    .badge-prospect {{
+      background: #fef3c7;
+      color: #92400e;
+    }}
+    .badge-client {{
+      background: #dcfce7;
+      color: #14532d;
+    }}
+    .radar-article-headline {{
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.45;
+      letter-spacing: -0.1px;
+    }}
+    .radar-article-source {{
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--ink-3);
+    }}
+    .radar-summary {{
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--ink-2);
+    }}
+    .radar-meta-block {{
+      background: rgba(217,119,6,0.06);
+      border-left: 2px solid #d97706;
+      padding: 12px 14px;
+      border-radius: 0 2px 2px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }}
+    .radar-meta-block.client-block {{
+      background: rgba(22,163,74,0.06);
+      border-left-color: #16a34a;
+    }}
+    .radar-meta-label {{
+      font-size: 8px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      color: #d97706;
+    }}
+    .radar-meta-block.client-block .radar-meta-label {{
+      color: #16a34a;
+    }}
+    .radar-meta-text {{
+      font-size: 12px;
+      line-height: 1.65;
+      color: var(--ink-2);
+    }}
+    .email-block {{
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 3px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }}
+    .email-block-header {{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }}
+    .copy-email-btn {{
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      background: var(--ink);
+      color: #fff;
+      border: none;
+      border-radius: 2px;
+      padding: 5px 10px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: opacity .15s;
+    }}
+    .copy-email-btn:hover {{ opacity: 0.7; }}
+    .email-subject {{
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink);
+    }}
+    .email-body {{
+      font-size: 12px;
+      line-height: 1.75;
+      color: var(--ink-2);
+      white-space: pre-wrap;
+    }}
+    @media (max-width: 1024px) {{
+      .radar-grid {{ grid-template-columns: 1fr; }}
+      .radar-section {{ padding: 28px 28px; }}
+    }}
+    @media (max-width: 640px) {{
+      .radar-section {{ padding: 20px 16px; margin-bottom: 48px; }}
+      .radar-title {{ font-size: 18px; }}
+    }}
+
     /* ── Empty card ── */
     .empty-card {{
       grid-column: 1 / -1;
@@ -773,6 +1085,7 @@ def generate_html(all_industry_articles):
 </nav>
 
 <main>
+  {radar_html}
   {sections}
 </main>
 
@@ -792,6 +1105,14 @@ def generate_html(all_industry_articles):
       const orig = btn.textContent;
       btn.textContent = "✓ Copied";
       setTimeout(() => btn.textContent = orig, 2500);
+    }});
+  }}
+  function copyEmail(btn, subject, bodyId) {{
+    const body = document.getElementById(bodyId).textContent;
+    const full = "Subject: " + subject + "\\n\\n" + body;
+    navigator.clipboard.writeText(full).then(() => {{
+      btn.textContent = "✓ Copied";
+      setTimeout(() => btn.textContent = "Copy", 2000);
     }});
   }}
 </script>
@@ -839,7 +1160,7 @@ CTA_VARIANTS = [
     "Good week to pay attention. Full digest below.",
 ]
 
-def generate_slack_briefing(all_industry_articles, page_url):
+def generate_slack_briefing(all_industry_articles, page_url, account_hits=[]):
     import random
     articles_text = ""
     for ind in all_industry_articles:
@@ -890,7 +1211,21 @@ This week's articles:
         max_tokens=1200,
         messages=[{"role": "user", "content": prompt}]
     )
-    return message.content[0].text.strip()
+    briefing = message.content[0].text.strip()
+
+    # Prepend "On Our Radar" block if there are account hits
+    if account_hits:
+        radar_lines = ["🎯 *On Our Radar*"]
+        for hit in account_hits:
+            acct  = hit["account"]
+            label = "PROSPECT" if acct.get("type", "prospect").lower() == "prospect" else "CLIENT"
+            note  = hit.get("strategic_angle") or hit.get("relationship_note") or ""
+            # Trim to one sentence
+            note  = note.split(".")[0] + "." if "." in note else note
+            radar_lines.append(f"• *{acct['name']}* [{label}] — {hit['article']['title']}. {note}")
+        briefing = "\n".join(radar_lines) + "\n\n" + briefing
+
+    return briefing
 
 
 # ── STEP 6: Post to Slack ─────────────────────────────────────────────────────
@@ -980,8 +1315,35 @@ def main():
         all_industry_articles.append({"name": industry["name"], "articles": good_articles})
         total += len(good_articles)
 
+    # ── Named account tracking ────────────────────────────────────────────────
+    account_hits = []
+    if config.get("accounts"):
+        print("🎯 Checking named accounts...\n")
+        for account in config["accounts"]:
+            label = account.get("type", "prospect").upper()
+            print(f"  {account['name']} ({label})...")
+            candidates = fetch_account_news(account)
+            found = False
+            for article in candidates:
+                result = evaluate_account_article(article, account)
+                if result.get("relevant"):
+                    account_hits.append({
+                        "account":           account,
+                        "article":           article,
+                        "summary":           result.get("summary", ""),
+                        "strategic_angle":   result.get("strategic_angle", ""),
+                        "outreach_email":    result.get("outreach_email"),
+                        "relationship_note": result.get("relationship_note"),
+                    })
+                    print(f"    ✓ {article['title'][:65]}...")
+                    found = True
+                    break
+            if not found:
+                print(f"    — Nothing newsworthy this week.")
+        print(f"\n  → {len(account_hits)} account hit(s) found.\n")
+
     print("📄 Building HTML digest...")
-    html = generate_html(all_industry_articles)
+    html = generate_html(all_industry_articles, account_hits)
 
     dated_filename = f"digest_{datetime.now().strftime('%Y-%m-%d')}.html"
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1006,7 +1368,7 @@ def main():
     wait_for_deployment(page_url)
 
     print("💬 Writing Slack briefing...")
-    briefing = generate_slack_briefing(all_industry_articles, page_url)
+    briefing = generate_slack_briefing(all_industry_articles, page_url, account_hits)
 
     print("💬 Posting to Slack...")
     post_to_slack(page_url, total, briefing)
