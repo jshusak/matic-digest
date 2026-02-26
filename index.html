@@ -216,6 +216,18 @@
       text-transform: uppercase;
       letter-spacing: 1.2px;
       color: var(--ink-3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .timestamp {
+      font-size: 9px;
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+      color: var(--ink-3);
+      flex-shrink: 0;
     }
     .headline {
       font-size: 15px;
@@ -282,6 +294,24 @@
     }
     .read-more:hover { gap: 10px; }
 
+    /* ── Empty card ── */
+    .empty-card {
+      grid-column: 1 / -1;
+      background: transparent;
+      box-shadow: none;
+      border: 1px dashed var(--rule);
+    }
+    .empty-card:hover {
+      box-shadow: none;
+      transform: none;
+    }
+    .empty-msg {
+      font-size: 13px;
+      color: var(--ink-3);
+      padding: 32px 22px;
+      font-style: italic;
+    }
+
     /* ── Footer ── */
     .site-footer {
       border-top: 1px solid var(--rule);
@@ -291,10 +321,24 @@
       justify-content: space-between;
       background: var(--surface);
     }
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
     .footer-logo {
       font-size: 13px;
       font-weight: 600;
       color: var(--ink);
+    }
+    .footer-divider {
+      width: 1px;
+      height: 14px;
+      background: var(--rule);
+    }
+    .footer-tagline {
+      font-size: 11px;
+      color: var(--ink-3);
     }
     .footer-meta {
       font-size: 11px;
@@ -352,24 +396,29 @@
         display: none;
       }
       .site-nav {
-        padding: 0 20px;
+        padding: 0 16px;
       }
       .site-nav a {
-        padding: 0 12px;
+        padding: 0 10px;
         font-size: 9px;
+        height: 44px;
       }
       .site-nav a:first-child {
         padding-left: 0;
       }
       .nav-action {
-        padding-left: 16px;
+        padding-left: 12px;
+      }
+      .notebook-btn .btn-label {
+        display: none;
       }
       .notebook-btn {
-        font-size: 9px;
-        padding: 8px 12px;
+        font-size: 14px;
+        padding: 8px 10px;
+        letter-spacing: 0;
       }
       main {
-        padding: 36px 20px 56px;
+        padding: 32px 16px 56px;
       }
       .section-header {
         flex-direction: column;
@@ -384,33 +433,39 @@
       }
       .grid {
         grid-template-columns: 1fr;
-        gap: 14px;
+        gap: 12px;
       }
       .card-img {
-        height: 200px;
+        height: 180px;
       }
       .card-body {
-        padding: 18px 18px 20px;
+        padding: 16px 16px 20px;
         gap: 12px;
       }
       .headline {
-        font-size: 16px;
+        font-size: 15px;
       }
       .summary {
-        font-size: 14px;
+        font-size: 13px;
       }
       .meta-text {
-        font-size: 13px;
+        font-size: 12px;
       }
       .talking-points li {
-        font-size: 13px;
+        font-size: 12px;
       }
       .site-footer {
-        padding: 24px 20px;
+        padding: 24px 16px;
         flex-direction: column;
         align-items: flex-start;
-        gap: 6px;
+        gap: 8px;
       }
+      .footer-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+      .footer-divider { display: none; }
     }
   </style>
 </head>
@@ -419,7 +474,7 @@
 <header class="site-header">
   <div class="brand">
     <h1>Matic Digest</h1>
-    <p>Industry Intelligence · Internal</p>
+    <p>Week of February 26, 2026 · Industry Intelligence · Internal</p>
   </div>
   <div class="header-stats">
     <div class="stat">
@@ -430,11 +485,6 @@
     <div class="stat">
       <div class="stat-value">6</div>
       <div class="stat-label">Industries</div>
-    </div>
-    <div class="stat-divider"></div>
-    <div class="stat">
-      <div class="stat-value">Feb 26</div>
-      <div class="stat-label">2026</div>
     </div>
   </div>
 </header>
@@ -450,7 +500,7 @@
 
   </div>
   <div class="nav-action">
-    <button class="notebook-btn" onclick="copyURLs(this)">↗ Copy URLs for NotebookLM</button>
+    <button class="notebook-btn" onclick="copyURLs(this)">↗<span class="btn-label"> Copy URLs for NotebookLM</span></button>
   </div>
 </nav>
 
@@ -464,94 +514,94 @@
             <div class="section-meta">4 articles this week</div>
           </div>
           <div class="grid">
-            <div class="card" style="--accent:#16a34a;">
-              <img class="card-img" src="https://a.fsdn.com/sd/topics/power_64.png" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">Slashdot.org</div>
-                <div class="headline">The US Had a Big Battery Boom Last Year</div>
-                <div class="summary">The US installed a record 57 gigawatt hours of battery storage in 2025—a 30% jump—despite the Trump administration cutting wind and solar tax credits. Battery storage is now outpacing policy headwinds as a core infrastructure play in the energy transition.</div>
+                <div class="card" style="--accent:#16a34a;">
+                  <img class="card-img" src="https://a.fsdn.com/sd/topics/power_64.png" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">Slashdot.org<span class="timestamp">Yesterday</span></div>
+                    <div class="headline">The US Had a Big Battery Boom Last Year</div>
+                    <div class="summary">The US installed a record 57 gigawatt hours of battery storage in 2025—a 30% jump year-over-year—despite the Trump administration cutting tax credits for wind and solar. Battery storage is now outpacing traditional renewable capacity growth, signaling a fundamental shift in how energy infrastructure is being built and financed.</div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This matters because battery storage is becoming the narrative centerpiece for renewable energy companies. Growth & Marketing Ops is the obvious play here—clients need to communicate why storage solves grid reliability in ways solar and wind alone don't. But Brand & Creative matters too: companies in this space are still defining what they stand for beyond 'we store power.' The policy friction also means messaging has to get sharper about independence from subsidies.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This matters for Growth & Marketing Ops and Brand & Creative work with our clients. Battery storage companies are suddenly in a position to own a huge conversation about grid resilience and energy independence that doesn't rely solely on tax incentives. For clients in this space, it's time to rethink messaging—moving away from 'we're green' toward 'we're the backbone of a functional grid.' There's also a positioning opportunity for established renewable energy companies to expand into or partner on storage.</div>
+                    </div>
+
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>Battery storage just became the story—not solar or wind. We should be asking our clients: are you thinking about storage in your brand narrative, or are you still selling the old story?</li><li>This could be a content strategy shift for Growth & Marketing Ops. If tax credits are off the table, the pitch changes. What's the non-subsidy case for storage? That's worth mapping out before competitors do.</li><li>Here's the question that should keep them up at night: if battery storage is growing 30% a year on fundamentals alone, what does that say about the long-term positioning of companies that bet everything on subsidy-dependent models?</li></ul>
+                    </div>
+
+                    <a href="https://hardware.slashdot.org/story/26/02/24/206224/the-us-had-a-big-battery-boom-last-year" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
                 </div>
+                <div class="card" style="--accent:#16a34a;">
+                  <img class="card-img" src="https://assets.newatlas.com/dims4/default/462ed2a/2147483647/strip/true/crop/3840x2016+0+272/resize/1200x630!/quality/90/?url=https%3A%2F%2Fnewatlas-brightspot.s3.amazonaws.com%2F44%2Ff8%2Fb9ed2eb54aeda792c76c1f759eaa%2Fsolar-orbiters-widest-high-res-view-of-the-sun-esa508430.jpeg&na.image_optimisation=0" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">New Atlas<span class="timestamp">3d ago</span></div>
+                    <div class="headline">Remarkable reusable liquid stores solar energy like bottled sunlight</div>
+                    <div class="summary">Researchers have developed a reusable liquid that stores solar energy through a reversible chemical reaction, effectively creating a thermal battery that can hold heat for months. The breakthrough addresses one of renewable energy's thorniest problems: what to do with solar power when the sun isn't shining, and could reshape how we think about energy storage infrastructure.</div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>Battery storage just became the unsexy hero story. I'm curious whether your positioning leans into that—the boring infrastructure play that actually keeps the lights on—or if you're still fighting to sound more exciting than you need to be.</li><li>This growth happened against policy headwinds, which means your customers are buying the product, not the tax incentive. That's a massive messaging shift. Are you talking to prospects about what storage does for their grid, or are you still leading with 'here's how you capture the credit'?</li><li>If battery storage keeps growing at 30% annually, the category goes from scrappy to crowded fast. What's the positioning that survives that transition—the thing that keeps you from being a commodity in three years?</li></ul>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This is a game-changing storage technology that will force renewable energy companies to completely rethink their value propositions and market positioning. Growth & Marketing Ops becomes critical here—clients need to understand how this shifts competitive advantage, and Brand & Creative matters equally, since companies deploying this tech will need entirely new narratives around what 'renewable energy' actually means to customers and investors.</div>
+                    </div>
+
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>This is the kind of thing your customers are going to start asking about in six months. Do you have a point of view on thermal storage yet, or are we still talking about batteries?</li><li>If your clients are in the storage space, we should map out how this changes their positioning—are they the legacy play or the forward bet? That's a Brand & Creative conversation that needs to happen now.</li><li>The real question: does this make centralized solar farms more competitive again, or does it enable distributed residential solar to finally win? Your whole go-to-market strategy might hinge on getting that right.</li></ul>
+                    </div>
+
+                    <a href="https://newatlas.com/energy/molecular-solar-thermal-energy-storage-liquid/" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
                 </div>
+                <div class="card" style="--accent:#16a34a;">
+                  <img class="card-img" src="https://assets.newatlas.com/dims4/default/96ce27d/2147483647/strip/true/crop/1536x806+0+109/resize/1200x630!/quality/90/?url=https%3A%2F%2Fnewatlas-brightspot.s3.amazonaws.com%2F04%2Fa3%2F3234f9974e6783eab53df0022a53%2Fchatgpt-image-feb-25-2026-01-02-27-pm.png&na.image_optimisation=0" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">New Atlas<span class="timestamp">Yesterday</span></div>
+                    <div class="headline">Leaving water in batteries nearly doubles energy storage</div>
+                    <div class="summary">Researchers have developed a method to nearly double the energy density of sodium-ion batteries by incorporating water-rich cathodes, addressing a key limitation that's kept these batteries from competing with lithium-ion in storage applications. This matters because sodium-ion batteries are cheaper, more abundant, and easier to source than lithium—but they've always been the weaker choice for actual energy storage.</div>
 
-                <a href="https://hardware.slashdot.org/story/26/02/24/206224/the-us-had-a-big-battery-boom-last-year" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div>
-            <div class="card" style="--accent:#16a34a;">
-              <img class="card-img" src="https://assets.newatlas.com/dims4/default/462ed2a/2147483647/strip/true/crop/3840x2016+0+272/resize/1200x630!/quality/90/?url=https%3A%2F%2Fnewatlas-brightspot.s3.amazonaws.com%2F44%2Ff8%2Fb9ed2eb54aeda792c76c1f759eaa%2Fsolar-orbiters-widest-high-res-view-of-the-sun-esa508430.jpeg&na.image_optimisation=0" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">New Atlas</div>
-                <div class="headline">Remarkable reusable liquid stores solar energy like bottled sunlight</div>
-                <div class="summary">Researchers have developed a reusable liquid that stores solar energy through reversible chemical reactions, essentially creating a bottled form of captured sunlight that can be released on demand. The breakthrough addresses one of renewable energy's core problem: how to store intermittent solar power efficiently and at scale, without the weight and cost limitations of current battery technology.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This is directly relevant to Growth & Marketing Ops and Software & Technology. Renewable energy clients are going to face real decisions about battery chemistry and storage strategy in the next 18–24 months. If sodium-ion becomes viable at scale, it changes the economics of grid storage and distributed energy projects. We should be helping them understand what this means for their messaging, positioning, and whether their platforms need to communicate these distinctions to different audiences.</div>
+                    </div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This is exactly the kind of innovation that reshapes how renewable energy companies position themselves—from hardware manufacturers to energy solution providers. Our Growth & Marketing Ops work becomes critical here: clients need to communicate breakthrough tech to skeptical investors, regulators, and utilities who don't yet understand why this matters. There's also a Brand & Creative play—how does a company tell the story of a fundamental shift in energy storage without sounding like science fiction?</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>Sodium-ion feels like it's finally getting real traction, and your customers probably care about this more than you realize—especially if you're selling into markets where supply chain risk or cost sensitivity matters.</li><li>If your positioning has relied on 'we use the best battery tech,' you might need to rethink that story. This tech shifts what 'best' even means depending on the application.</li><li>Here's the question: Are you talking to your customers about battery chemistry at all, or are you still hiding it? Because the market's moving toward transparency, and that's a content and education play waiting to happen.</li></ul>
+                    </div>
+
+                    <a href="https://newatlas.com/energy/sodium-ion-batteries-water/" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
                 </div>
+                <div class="card" style="--accent:#16a34a;">
+                  <img class="card-img" src="https://www.sciencedaily.com/images/1920/aqueous-batteries.webp" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">Science Daily<span class="timestamp">Feb 19</span></div>
+                    <div class="headline">New sodium ion battery stores twice the energy and desalinates seawater</div>
+                    <div class="summary">Researchers at the University of Surrey found that keeping water in sodium-ion battery materials—instead of removing it as standard practice—doubles energy storage capacity and creates a desalination byproduct. This breakthrough positions sodium-ion as a serious challenger to lithium batteries, with immediate implications for grid storage and distributed energy systems.</div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>I keep seeing energy storage get positioned as a technical problem, but it's actually a narrative problem right now. How does your company help people *understand* why this matters, versus just saying 'we store more energy'?</li><li>If you're scaling a storage technology, you're going to need a content strategy that maps to where different audiences are—some are still at 'what is this,' others are ready to talk deployment. Have you thought about how to segment that messaging?</li><li>Here's what I'd ask: if storage becomes cheap and abundant, does your entire go-to-market strategy change? Because for a lot of renewable companies, scarcity of storage has actually been protecting their margins.</li></ul>
-                </div>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This is directly relevant to Growth & Marketing Ops and Brand & Creative for our renewable energy clients. Storage technology is becoming a core differentiator in how energy companies compete and tell their story—especially as sodium-ion moves from lab curiosity to commercial viability. Clients in this space need help communicating why their storage approach matters, and they need to understand where the market is actually headed, not where it was last year.</div>
+                    </div>
 
-                <a href="https://newatlas.com/energy/molecular-solar-thermal-energy-storage-liquid/" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div>
-            <div class="card" style="--accent:#16a34a;">
-              <img class="card-img" src="https://assets.newatlas.com/dims4/default/96ce27d/2147483647/strip/true/crop/1536x806+0+109/resize/1200x630!/quality/90/?url=https%3A%2F%2Fnewatlas-brightspot.s3.amazonaws.com%2F04%2Fa3%2F3234f9974e6783eab53df0022a53%2Fchatgpt-image-feb-25-2026-01-02-27-pm.png&na.image_optimisation=0" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">New Atlas</div>
-                <div class="headline">Leaving water in batteries nearly doubles energy storage</div>
-                <div class="summary">Researchers have figured out how to nearly double the energy density of sodium-ion batteries by keeping water in the cathode material during manufacturing. This matters because sodium-ion batteries are cheaper and more abundant than lithium alternatives, and if they can now match lithium's storage capacity, they become genuinely competitive for grid-scale renewable energy storage.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>If your client is in energy storage or grid infrastructure, this sodium-ion shift is happening faster than most people think. The question isn't 'will this matter?' but 'are we positioned to capitalize on it before it becomes table stakes?'</li><li>There's a real storytelling opportunity here—most renewable companies are stuck talking about efficiency gains in technical terms. But when a breakthrough like this creates drinking water as a side effect, that's the kind of narrative that actually moves audiences. We should be thinking about how your brand gets ahead of that conversation.</li><li>Here's what keeps me up: if sodium-ion becomes cost-competitive with lithium in the next 18 months, the entire energy storage narrative shifts. Companies that have built their brand around lithium advantages suddenly look dated. How is your client thinking about that contingency?</li></ul>
+                    </div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This is a straight technical breakthrough that changes the economics of battery storage—a cornerstone technology for renewable deployment. For clients, it signals market timing around messaging and positioning. Growth & Marketing Ops becomes critical here: how do you communicate this shift to investors, utilities, and regulators before competitors do? There's also an Experience Design angle if clients need to help audiences understand why sodium-ion suddenly matters more than it did last year.</div>
-                </div>
-
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>So sodium-ion just became way more viable for grid storage. That's not a nice-to-have story for energy companies anymore—it's a competitive advantage to own early. How are you talking about this to your board?</li><li>The real question: do your customers understand *why* this changes things for their projects and timelines? This is where a content & messaging strategy actually earns its keep—turning material science into narrative that sticks.</li><li>If this tech scales in the next 18 months, the entire cost curve for renewable projects shifts. Are you building your brand positioning around what storage looks like *then*, or are you still talking about yesterday's constraints?</li></ul>
-                </div>
-
-                <a href="https://newatlas.com/energy/sodium-ion-batteries-water/" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div>
-            <div class="card" style="--accent:#16a34a;">
-              <img class="card-img" src="https://www.sciencedaily.com/images/1920/aqueous-batteries.webp" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">Science Daily</div>
-                <div class="headline">New sodium ion battery stores twice the energy and desalinates seawater</div>
-                <div class="summary">University of Surrey researchers discovered that keeping water inside sodium-ion battery materials—instead of removing it—doubles energy storage capacity and enables seawater desalination as a byproduct. This breakthrough could make sodium-ion batteries cost-competitive with lithium, which matters because sodium is abundant, cheap, and doesn't require the mining footprint that lithium does.</div>
-
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This is directly relevant for energy storage clients building competitive positioning. Growth & Marketing Ops teams should track this—it's a narrative shift that changes how companies talk about battery tech and sustainability credentials. Brand & Creative becomes critical too: whoever tells this story first (the dual benefit angle, the water story) owns the category conversation in the market.</div>
-                </div>
-
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>Sodium-ion just stopped being the scrappy alternative and became the answer to two problems at once. Your clients need to know if this changes their competitive moat or their go-to-market message.</li><li>There's a content and positioning play here—whoever helps their buyers understand sodium-ion's practical advantages over lithium (cost, abundance, environmental story) gets to own the narrative. Have you thought about what your brand says about this shift, or are you waiting for competitors to frame it first?</li><li>Five years from now, will your energy storage clients be differentiated by their chemistry, or by the story they tell about what that chemistry enables? This is the moment to decide.</li></ul>
-                </div>
-
-                <a href="https://www.sciencedaily.com/releases/2026/02/260218031603.htm" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div></div>
+                    <a href="https://www.sciencedaily.com/releases/2026/02/260218031603.htm" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
+                </div></div>
         </section>
         <section id="health-and-wellness" style="--accent:#2563eb;">
           <div class="section-header">
@@ -561,94 +611,94 @@
             <div class="section-meta">4 articles this week</div>
           </div>
           <div class="grid">
-            <div class="card" style="--accent:#2563eb;">
-              <img class="card-img" src="https://static.scientificamerican.com/dam/m/2d08a8042400e95/original/Major-Northeast-Winter-Storm-Brings-Snow-To-D-C-WASHINGTON-DC-FEBRUARY-23-Snow-falls-on-the-U-S-Capitol-on-February-23-2026-in-Washington-DC-A-major-winter-storm-has-hit-the-Northeast-and-Mid-Atlantic-regions-bringing-heavy-snowfall-and-a-blizzard-warning-has-been-issued-for-large-areas-of-the-East-Coast-Photo-by-Heather-Diehl-Getty-Images.jpg?m=1771945911.913&w=1200" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">Scientific American</div>
-                <div class="headline">Online influencer faces confirmation hearing for surgeon general in U.S. Senate</div>
-                <div class="summary">Casey Means, a wellness influencer and former doctor who pivoted to alternative medicine, is undergoing Senate confirmation as U.S. surgeon general under the Trump administration. This is a significant moment for the wellness industry—a figure who represents the shift away from conventional medicine now sits at the center of federal health policy.</div>
+                <div class="card" style="--accent:#2563eb;">
+                  <img class="card-img" src="https://static.scientificamerican.com/dam/m/2d08a8042400e95/original/Major-Northeast-Winter-Storm-Brings-Snow-To-D-C-WASHINGTON-DC-FEBRUARY-23-Snow-falls-on-the-U-S-Capitol-on-February-23-2026-in-Washington-DC-A-major-winter-storm-has-hit-the-Northeast-and-Mid-Atlantic-regions-bringing-heavy-snowfall-and-a-blizzard-warning-has-been-issued-for-large-areas-of-the-East-Coast-Photo-by-Heather-Diehl-Getty-Images.jpg?m=1771945911.913&w=1200" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">Scientific American<span class="timestamp">Yesterday</span></div>
+                    <div class="headline">Online influencer faces confirmation hearing for surgeon general in U.S. Senate</div>
+                    <div class="summary">Wellness influencer Casey Means is undergoing Senate confirmation as Trump's pick for U.S. surgeon general—a significant shift in who shapes national health policy. This marks a pivotal moment where alternative medicine and direct-to-consumer wellness messaging are entering mainstream regulatory authority.</div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This matters because it signals a massive legitimization of alternative and preventive wellness approaches at the policy level. For Health & Wellness clients, Brand & Creative becomes critical—how do you position your brand when the cultural conversation around medicine and wellness is fundamentally shifting? Growth & Marketing Ops also matters here: clients need to understand how federal health messaging will change and how that reshapes their audience's trust and buying behavior.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This signals a major wind shift in how Health & Wellness brands can position themselves. If alternative medicine and preventive wellness are gaining political legitimacy at the federal level, our clients need to think differently about their Brand & Creative positioning and Growth & Marketing Ops strategy—especially around messaging credibility and where they sit in the mainstream-versus-alternative spectrum. It's also a prompt for Growth & Marketing Ops teams to watch how regulatory messaging evolves; if the surgeon general's office becomes an advocate for metabolic health or preventive care, that's tailwind for certain client categories and headwind for others.</div>
+                    </div>
+
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>If your client is in preventive health, metabolic wellness, or alternative medicine, the regulatory environment just tilted in your favor—but only if you're ready to claim it. What does your brand actually stand for when the conversation gets serious?</li><li>This is a Brand & Creative moment: does your client need to rebuild trust and credibility in a landscape where "wellness influencer" is no longer a pejorative? That's messaging work.</li><li>Here's the bigger question: if federal health policy starts talking like a wellness brand, what does that do to your positioning? You either lean into being the credible alternative, or you get crowded out by government-backed narratives.</li></ul>
+                    </div>
+
+                    <a href="https://www.scientificamerican.com/article/online-influencer-faces-confirmation-hearing-for-surgeon-general-in-u-s/" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
                 </div>
+                <div class="card" style="--accent:#2563eb;">
+                  <img class="card-img" src="https://api-prod.gothamist.com/images/353173/fill-1200x650|format-webp|webpquality-85/" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">Gothamist<span class="timestamp">4d ago</span></div>
+                    <div class="headline">NYC nurses strike ends after NewYork-Presbyterian nurses ratify new contract</div>
+                    <div class="summary">After a 41-day strike, nurses at NewYork-Presbyterian ratified a new three-year contract, ending the longest nursing walkout in NYC history. The deal signals a major shift in how health systems compensate and retain clinical staff—something every health and wellness organization will feel ripple through their talent strategies.</div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>It's worth asking your wellness clients how they're thinking about this moment. If the surgeon general believes in metabolic health and lifestyle medicine, does that validate their positioning—or does it suddenly make them part of an establishment narrative they've been rebelling against?</li><li>There's a real Brand & Creative opportunity here: clients who've been operating in the alternative space might need to reconsider their messaging if wellness is no longer counter-culture. What happens to your brand story when the mainstream catches up?</li><li>The bigger question: as federal health authority swings toward preventive and alternative medicine, who actually wins? The established players with resources to adapt, or the scrappy brands that built their reputation on being different? That tells you everything about what your client should be doing right now.</li></ul>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This matters for Health & Wellness clients because workforce retention and employer brand just became visible. Brand & Creative is most relevant here—health systems and wellness companies need to rethink how they talk about culture, compensation, and working conditions to candidates. Growth & Marketing Ops also plays a role in attracting talent when your reputation as an employer is suddenly on trial.</div>
+                    </div>
+
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>If you're a health system or large wellness player, your staff are watching this closely. What does your employer brand actually promise versus what people experience day-to-day? That gap just got a lot more public.</li><li>There's a real Brand & Creative play here: health organizations need to audit how they're talking about work culture externally versus what's happening internally. That dissonance tanks recruitment.</li><li>The bigger question: as labor costs rise across healthcare, how does that reshape your pricing, your service model, your positioning in a crowded market? This contract didn't just affect NewYork-Presbyterian.</li></ul>
+                    </div>
+
+                    <a href="https://gothamist.com/news/nyc-nurses-strike-ends-after-newyork-presbyterian-nurses-ratify-new-contract" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
                 </div>
+                <div class="card" style="--accent:#2563eb;">
+                  <img class="card-img" src="https://wp.technologyreview.com/wp-content/uploads/2026/02/260219_peptides_hero2.jpg?resize=1200,600" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">MIT Technology Review<span class="timestamp">3d ago</span></div>
+                    <div class="headline">Peptides are everywhere. Here’s what you need to know.</div>
+                    <div class="summary">Peptides have moved from fringe functional medicine into mainstream wellness—influencers are promoting them for weight loss, muscle gain, and cognitive performance, while the science remains messy and largely unregulated. This signals a shift in how consumers are discovering and adopting novel health interventions, and it's outpacing both clinical evidence and regulatory clarity.</div>
 
-                <a href="https://www.scientificamerican.com/article/online-influencer-faces-confirmation-hearing-for-surgeon-general-in-u-s/" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div>
-            <div class="card" style="--accent:#2563eb;">
-              <img class="card-img" src="https://api-prod.gothamist.com/images/353173/fill-1200x650|format-webp|webpquality-85/" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">Gothamist</div>
-                <div class="headline">NYC nurses strike ends after NewYork-Presbyterian nurses ratify new contract</div>
-                <div class="summary">NewYork-Presbyterian nurses ended a 41-day strike after ratifying a new three-year contract, marking NYC's largest and longest nursing walkout. The deal signals labor cost pressures and workforce dynamics reshaping major health systems, with immediate implications for operational planning and talent retention across the industry.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This is a Growth & Marketing Ops moment wrapped in a Brand & Creative problem. Wellness brands are either riding this trend or getting blindsided by it, and they need to decide fast whether to engage, ignore, or actively educate against it. The reputational risk is real—align too closely and you look like you're chasing hype; stay silent and you lose credibility with your audience who's already hearing about peptides everywhere.</div>
+                    </div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This matters most for Growth & Marketing Ops and Brand & Creative work with health systems and providers. Labor disputes this visible reshape how organizations talk about themselves—culture, values, workplace narrative all come under scrutiny. Clients are going to need help recalibrating their employer brand and internal messaging in a tighter labor market.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>Peptides are the new supplement category your customers are already asking about in DMs and Reddit threads. The question isn't whether to talk about them—it's whether your brand gets ahead of the conversation or plays catch-up when something goes wrong.</li><li>If you're in wellness, you need a content and messaging strategy that acknowledges what's real versus what's marketing theater. That's where we'd start—mapping the landscape and building a framework your team can actually use to talk about emerging trends without looking reckless.</li><li>Here's what keeps me up: in 12 months, peptides could either become regulated like pharmaceuticals or remain a Wild West. Your brand positioning today determines whether you're credible either way, or caught in the middle looking confused.</li></ul>
+                    </div>
+
+                    <a href="https://www.technologyreview.com/2026/02/23/1133522/peptides-are-everywhere-heres-what-you-need-to-know/" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
                 </div>
+                <div class="card" style="--accent:#2563eb;">
+                  <img class="card-img" src="https://i0.wp.com/nextbigwhat.com/wp-content/uploads/2024/02/18ec0-cropped-nbw-icon-2022.png?fit=512%2C512&ssl=1" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">Nextbigwhat.com<span class="timestamp">Yesterday</span></div>
+                    <div class="headline">Oura introduces AI model tailored for women’s reproductive health</div>
+                    <div class="summary">Oura rolled out a new AI model built specifically for women's reproductive health—tracking everything from early menstrual cycles through menopause. It's a direct play at personalization in a category where generic health data has historically missed the mark for women.</div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>If you're working with a health system right now, this strike probably changed how their people talk about working there. Are they telling a coherent story about culture and compensation, or just reacting?</li><li>There's real Brand & Creative work here around employer positioning. Health systems need to stop competing on wages alone and start building narratives about what makes them different to work for—that's territory we should own for clients.</li><li>The bigger question: as labor costs climb and visibility around staff treatment increases, are your clients' external brand stories aligned with what's actually happening internally? Because they won't be for long if they're not.</li></ul>
-                </div>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This matters because it shows where wearables and health tech are actually moving: away from one-size-fits-all dashboards toward identity-specific insights. For our clients, this signals real opportunity in Experience Design and Software & Technology—the brands winning here are the ones building products that speak to specific bodies and life stages, not just generic wellness.</div>
+                    </div>
 
-                <a href="https://gothamist.com/news/nyc-nurses-strike-ends-after-newyork-presbyterian-nurses-ratify-new-contract" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div>
-            <div class="card" style="--accent:#2563eb;">
-              <img class="card-img" src="https://wp.technologyreview.com/wp-content/uploads/2026/02/260219_peptides_hero2.jpg?resize=1200,600" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">MIT Technology Review</div>
-                <div class="headline">Peptides are everywhere. Here’s what you need to know.</div>
-                <div class="summary">Peptides have moved from niche functional medicine into mainstream wellness culture, driven by longevity researchers, influencers, and companies positioning them as shortcuts to weight loss, muscle gain, and cognitive performance. The MIT piece unpacks what peptides actually are, what the science says, and why this particular wellness trend is worth understanding—especially since it's built on hype that often outpaces evidence.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>Oura's doing what a lot of health brands are still figuring out: women's health is a category with radically different data needs and communication styles. Worth asking—are we building for the person, or just collecting their data?</li><li>There's a real Experience Design conversation hiding here. If your product or service touches reproductive health, period tracking, or menopause, how are you actually talking to that audience? Generic tone and generic features are already losing.</li><li>The bigger play: AI personalization is becoming table stakes. The question isn't whether to do it anymore—it's whether you're personalizing around what actually matters to your audience, or just throwing machine learning at the problem.</li></ul>
+                    </div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This matters for Health & Wellness clients because peptides represent a category inflection point: moving from underground biohacking into consumer-facing marketing. If your client operates in longevity, fitness, or preventative health, they're either being asked about peptides or they're wondering if they should be selling them. Brand & Creative and Growth & Marketing Ops are the immediate plays here—you need clear positioning on whether peptides are part of your story, and if so, how you talk about them without sounding like every other wellness influencer.</div>
-                </div>
-
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>Peptides went from something functional medicine doctors whispered about to a category that wellness influencers are building entire brands around. The question isn't whether your audience is hearing about them—it's what your brand is actually saying about them.</li><li>There's a real Brand & Creative problem hiding in here: how do you talk credibly about an emerging category when the narrative is getting shaped by influencers and longevity researchers with competing agendas? That's content strategy work.</li><li>Here's the uncomfortable bit: if your Health & Wellness client isn't actively deciding their position on peptides—whether they recommend them, sell them, or stay silent—they're letting the market decide for them. What does that cost you in trust?</li></ul>
-                </div>
-
-                <a href="https://www.technologyreview.com/2026/02/23/1133522/peptides-are-everywhere-heres-what-you-need-to-know/" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div>
-            <div class="card" style="--accent:#2563eb;">
-              <img class="card-img" src="https://i0.wp.com/nextbigwhat.com/wp-content/uploads/2024/02/18ec0-cropped-nbw-icon-2022.png?fit=512%2C512&ssl=1" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">Nextbigwhat.com</div>
-                <div class="headline">Oura introduces AI model tailored for women’s reproductive health</div>
-                <div class="summary">Oura, the wearable health company, built an AI model specifically for women's reproductive health—tracking everything from early cycles through menopause. It's a direct signal that personalized health tech is moving beyond generic fitness metrics into deeply specific, life-stage-dependent insights.</div>
-
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This matters because it shows Health & Wellness companies are competing on proprietary data intelligence and personalization depth, not just features. For our clients, this opens conversations around Experience Design (how do you build interfaces for reproductive health without being clinical or patronizing?) and Software & Technology (what data architecture and AI capabilities do you actually need to deliver on these promises?).</div>
-                </div>
-
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>The fact that Oura built a model *just* for women's reproductive health tells us something—generic health tracking is dead. Clients are realizing their audience wants specificity, not another one-size-fits-all dashboard.</li><li>There's a real UX/UI challenge buried here: how do you design for a sensitive, personal health category in a way that feels intelligent and trustworthy rather than invasive? That's where we'd come in on the Experience Design side.</li><li>Here's the uncomfortable question: if a wearable company can build reproductive health intelligence into their product, what's your excuse for not having it? And if you're thinking about it, do you have the data infrastructure and team to actually pull it off, or are you going to get left behind by companies that do?</li></ul>
-                </div>
-
-                <a href="https://nextbigwhat.com/2026/02/25/oura-introduces-ai-model-tailored-for-womens-reproductive-health/" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div></div>
+                    <a href="https://nextbigwhat.com/2026/02/25/oura-introduces-ai-model-tailored-for-womens-reproductive-health/" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
+                </div></div>
         </section>
         <section id="marketing-tech" style="--accent:#ea580c;">
           <div class="section-header">
@@ -658,94 +708,94 @@
             <div class="section-meta">4 articles this week</div>
           </div>
           <div class="grid">
-            <div class="card" style="--accent:#ea580c;">
-              <img class="card-img" src="https://www.cmswire.com/-/media/97312fae1ce5460caac73cd7159cfd9f.ashx" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">CMSWire</div>
-                <div class="headline">From Awareness to Orchestration: Rethinking Audio in the Martech Stack</div>
-                <div class="summary">Audio advertising is being repositioned from a brand awareness channel into a performance and conversion driver through CDP integration, programmatic buying, and omnichannel orchestration. The shift makes audio measurable and accountable to business outcomes instead of treating it as an unmeasurable megaphone.</div>
+                <div class="card" style="--accent:#ea580c;">
+                  <img class="card-img" src="https://www.cmswire.com/-/media/97312fae1ce5460caac73cd7159cfd9f.ashx" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">CMSWire<span class="timestamp">Yesterday</span></div>
+                    <div class="headline">From Awareness to Orchestration: Rethinking Audio in the Martech Stack</div>
+                    <div class="summary">Audio advertising is finally breaking free from its brand-awareness cage. The article argues that when you integrate audio into a CDP and layer programmatic buying with omni-channel triggers, it stops being a megaphone and becomes a measurable, performance-driven channel that actually moves the needle on conversion.</div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This matters because it signals a fundamental restructuring of how martech platforms are bundling channels together — and our Growth & Marketing Ops clients need to rethink how audio fits into their performance stack. There's also a real Experience Design play here: if audio is now part of omnichannel orchestration, the journey mapping and trigger logic have to account for an entirely different moment and context than display or email.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This matters for Growth & Marketing Ops clients who are still treating audio as a separate, unmeasurable bucket. It also signals a real gap in Experience Design — most martech stacks aren't built to treat audio with the same rigor as display or social. Clients need help rethinking their CDP architecture and measurement frameworks to make audio actually work.</div>
+                    </div>
+
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>Most teams still think of audio like a billboard on the highway. The piece suggests that's backwards — if your CDP and buying platform are talking to each other, audio becomes another channel for real-time personalization and conversion. That's a different animal entirely.</li><li>Here's the uncomfortable question: Is your CMS and content strategy even built to handle audio content at scale? Because if audio is becoming a performance channel, it needs the same taxonomy, versioning, and workflow rigor you'd give to email or landing pages.</li><li>What if the real bottleneck isn't the audio tech itself, but that your martech stack still treats channels like silos? That's the design problem nobody's solving yet.</li></ul>
+                    </div>
+
+                    <a href="https://www.cmswire.com/digital-marketing/from-awareness-to-orchestration-rethinking-audio-in-the-martech-stack/" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
                 </div>
+                <div class="card" style="--accent:#ea580c;">
+                  <img class="card-img" src="https://ml.globenewswire.com/Resource/Download/01eb1f79-0c67-420b-b423-376619f975cd" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">GlobeNewswire<span class="timestamp">Yesterday</span></div>
+                    <div class="headline">Marketing Technology (MarTech) Market Worth USD 3.28 Trillion by 2035 Driven by AI, Agile Marketing, and Privacy-First Personalization</div>
+                    <div class="summary">MarTech is projected to balloon from $557 billion in 2025 to $3.28 trillion by 2035, driven by AI, agile marketing, and privacy-first personalization. This isn't just growth—it's a complete reshaping of what marketers need to do and what tools they'll need to do it.</div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>Most brands still think of audio as a brand play, which means they're not capturing the conversion data they should be. If your CDP can trigger audio ads the same way it triggers emails, you're suddenly operating in a different league of personalization.</li><li>The real opportunity is in Growth & Marketing Ops: how do you build the orchestration layer that makes audio work as a performance channel? That's where the gaps are — platforms and operations aren't set up for it yet.</li><li>If audio becomes truly omnichannel, does that change how you think about your whole customer experience? Because if a CDP can reach someone on Spotify in a moment that matters, shouldn't that be baked into the journey design from the start?</li></ul>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This matters because your MarTech clients are sitting in the middle of an explosion. Growth & Marketing Ops becomes table stakes (they're all scrambling to operationalize AI and privacy compliance). But the real opportunity is Experience Design and Software & Technology—brands need to rethink their entire tech stack and how customers actually experience them in this new privacy-first world.</div>
+                    </div>
+
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>That CAGR isn't just a number—it means your competitors are already making bets. The question isn't whether AI and privacy matter to your MarTech stack. It's whether your brand story and positioning actually reflect that you get it.</li><li>Privacy-first personalization sounds like an oxymoron, right? But it's the actual problem your MarTech clients need solved. That's where Experience Design thinking becomes critical—mapping what you can actually know and do without creepy tracking.</li><li>Here's what keeps me up at night: if the market's growing this fast, the winners won't be the ones with the fanciest tech. They'll be the ones whose entire brand, messaging, and platform actually *trust* their customers. Are you built for that, or are you still operating like it's 2020?</li></ul>
+                    </div>
+
+                    <a href="https://www.globenewswire.com/news-release/2026/02/25/3244514/0/en/Marketing-Technology-MarTech-Market-Worth-USD-3-28-Trillion-by-2035-Driven-by-AI-Agile-Marketing-and-Privacy-First-Personalization.html" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
                 </div>
+                <div class="card" style="--accent:#ea580c;">
+                  <img class="card-img" src="https://images.indianexpress.com/2026/02/WhatsApp-Shopping.jpg" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">The Indian Express<span class="timestamp">Yesterday</span></div>
+                    <div class="headline">India’s shopping journey is moving to WhatsApp, finds Meta-RAI whitepaper</div>
+                    <div class="summary">A Meta–RAI whitepaper reveals that 72% of product discovery in India now happens on WhatsApp, signaling a fundamental shift in how shoppers move through omnichannel journeys. The platform has evolved from messaging app to a primary commerce discovery channel, reshaping where brands need to show up and how they need to think about customer experience.</div>
 
-                <a href="https://www.cmswire.com/digital-marketing/from-awareness-to-orchestration-rethinking-audio-in-the-martech-stack/" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div>
-            <div class="card" style="--accent:#ea580c;">
-              <img class="card-img" src="https://ml.globenewswire.com/Resource/Download/01eb1f79-0c67-420b-b423-376619f975cd" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">GlobeNewswire</div>
-                <div class="headline">Marketing Technology (MarTech) Market Worth USD 3.28 Trillion by 2035 Driven by AI, Agile Marketing, and Privacy-First Personalization</div>
-                <div class="summary">The MarTech market is forecast to grow nearly 5x from $557B (2025) to $3.28T (2035), driven by AI, agile marketing practices, and privacy-first personalization. This isn't just growth—it's a signal that the industry is fundamentally reshaping how brands capture, use, and act on customer data.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This is squarely a Growth & Marketing Ops and Experience Design story for any brand selling into India or emerging markets. Clients need to understand their audience isn't just browsing Instagram—they're discovering products in private messaging threads. That changes everything about go-to-market strategy, content distribution, and how you design for conversion where the customer actually is.</div>
+                    </div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">For MarTech clients, this validates the urgency around their tech stacks and operational maturity. Growth & Marketing Ops is the obvious play—clients need to build systems that handle AI-driven personalization at scale and stay compliant with privacy shifts. But Software & Technology matters just as much; the tools powering this growth are only valuable if they're integrated cleanly into existing platforms and built to evolve faster than regulation does.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>Have you looked at where your Indian audience is actually discovering your products? Most teams are still optimizing for feeds when the real traffic is happening in messaging apps.</li><li>This opens up a real Experience Design question: how do you design for commerce inside WhatsApp's constraints? CTA buttons, product pages, friction—it all works differently in that environment.</li><li>If messaging becomes the primary discovery channel, does your go-to-market strategy even make sense anymore? You might be building campaigns for the wrong stage of the journey.</li></ul>
+                    </div>
+
+                    <a href="https://indianexpress.com/article/technology/indias-shopping-journey-is-moving-to-whatsapp-finds-meta-rai-whitepaper-10552049/" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
                 </div>
+                <div class="card" style="--accent:#ea580c;">
+                  <img class="card-img" src="https://digiday.com/wp-content/uploads/sites/3/2026/01/ai-human-collab-digiday.jpeg" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">Digiday<span class="timestamp">Yesterday</span></div>
+                    <div class="headline">Can agencies fix the AI disconnect between the C-suite and marketing teams? Boathouse is trying to</div>
+                    <div class="summary">Boathouse, a marketing agency, just hired a dedicated AI strategist to help close the gap between executives demanding AI adoption and marketing teams that lack the strategy or tools to actually use it. The move signals that agencies themselves are recognizing AI isn't just a technology problem — it's an organizational one.</div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>If the market is growing this aggressively, your clients' competitors aren't sitting still. The question isn't whether to invest in MarTech—it's whether their current stack can actually keep up with what's coming in the next 3-5 years.</li><li>Privacy-first personalization is the phrase everyone's using, but it's a design problem, not just a compliance problem. Experience Design and Software & Technology have to work together here—your data architecture and your user experience need to tell the same story.</li><li>Here's what keeps MarTech leaders up at night: agility. In a market this volatile, being able to swap tools, iterate on campaigns, and respond to regulation without rebuilding everything is competitive advantage. That's where platform thinking and good architecture pay dividends.</li></ul>
-                </div>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This matters for Growth & Marketing Ops and Brand & Creative work. Our clients are having the exact same argument internally: leadership wants AI in the martech stack, but nobody's clear on what problem it actually solves for their business. We need to be the people who help them answer that before they buy another tool.</div>
+                    </div>
 
-                <a href="https://www.globenewswire.com/news-release/2026/02/25/3244514/0/en/Marketing-Technology-MarTech-Market-Worth-USD-3-28-Trillion-by-2035-Driven-by-AI-Agile-Marketing-and-Privacy-First-Personalization.html" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div>
-            <div class="card" style="--accent:#ea580c;">
-              <img class="card-img" src="https://images.indianexpress.com/2026/02/WhatsApp-Shopping.jpg" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">The Indian Express</div>
-                <div class="headline">India’s shopping journey is moving to WhatsApp, finds Meta-RAI whitepaper</div>
-                <div class="summary">Meta's research shows 72% of Indian product discovery now happens on WhatsApp, signaling a seismic shift in how emerging markets shop. For Marketing Tech players, this means the conversion funnel is moving off traditional channels and into messaging platforms — a market that's still largely unmapped by Western SaaS tools.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>I'm curious if your exec team is pushing AI adoption right now without a clear mandate. Because we're seeing that everywhere — it's almost become a checkbox. The real question is whether it actually changes how you operate.</li><li>There's a play here around Growth & Marketing Ops — we could help you map where AI actually creates leverage in your workflow versus where it's just noise. That's the strategy most teams skip and regret.</li><li>Here's what I wonder: in two years, are the agencies winning going to be the ones who sold the most AI tools, or the ones who helped clients figure out what their people should actually be doing differently?</li></ul>
+                    </div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This is a Growth & Marketing Ops signal wrapped in a geography story. Your clients selling into India or emerging markets need to rethink their go-to-market entirely — discovery, conversion, and customer support are all migrating to WhatsApp. Experience Design matters here too: if 72% of discovery happens in chat, the UX of product presentation, comparison, and purchase inside messaging apps becomes a competitive moat. This is where most MarTech platforms are still blind.</div>
-                </div>
-
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>If three-quarters of your buyer's journey happens in WhatsApp, your funnel analytics are probably measuring the wrong thing. Your tracking, attribution, and conversion infrastructure might be invisible to what's actually happening.</li><li>Here's what we're seeing: brands that win in chat-first markets aren't rethinking messaging — they're rethinking product discovery itself. Taxonomy, content strategy, even how you structure information becomes a design problem, not just a copy problem. That's Experience Design territory.</li><li>The real question for you: are you building for a world where WhatsApp *is* your storefront, or are you still designing for a website-first buyer that doesn't exist in these markets anymore?</li></ul>
-                </div>
-
-                <a href="https://indianexpress.com/article/technology/indias-shopping-journey-is-moving-to-whatsapp-finds-meta-rai-whitepaper-10552049/" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div>
-            <div class="card" style="--accent:#ea580c;">
-              <img class="card-img" src="https://digiday.com/wp-content/uploads/sites/3/2026/01/ai-human-collab-digiday.jpeg" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">Digiday</div>
-                <div class="headline">Can agencies fix the AI disconnect between the C-suite and marketing teams? Boathouse is trying to</div>
-                <div class="summary">Marketing teams are caught between C-suite pressure to adopt AI and a lack of actual strategy or tooling to make it work. Boathouse, a Boston agency, just hired someone to bridge that gap—recognizing that the AI hype cycle has outpaced most organizations' ability to execute it sensibly.</div>
-
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This is squarely about Growth & Marketing Ops and Experience Design. Marketing leaders need help translating boardroom mandates into coherent strategy and workflows. Most agencies are selling AI tools when clients actually need someone to audit their current stack, map where AI makes sense, and build the internal alignment to adopt it without chaos.</div>
-                </div>
-
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>I'm seeing this pattern everywhere—the C-suite sees GPT-4 and suddenly marketing is supposed to just... use it. But nobody's actually defined what problem it solves for your team. That's where the real work is.</li><li>Have you mapped out where AI actually saves your team time versus where it just creates more noise? That's an Experience Design and content strategy play that most people skip over.</li><li>Here's what I'm wondering: in two years, is your competitive advantage going to be that you adopted AI faster, or that you were more disciplined about where you used it? Because right now those feel like opposite bets.</li></ul>
-                </div>
-
-                <a href="http://digiday.com/marketing/can-agencies-fix-the-ai-disconnect-between-the-c-suite-and-marketing-teams-boathouse-is-trying-to/" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div></div>
+                    <a href="http://digiday.com/marketing/can-agencies-fix-the-ai-disconnect-between-the-c-suite-and-marketing-teams-boathouse-is-trying-to/" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
+                </div></div>
         </section>
         <section id="tourism" style="--accent:#db2777;">
           <div class="section-header">
@@ -755,94 +805,94 @@
             <div class="section-meta">4 articles this week</div>
           </div>
           <div class="grid">
-            <div class="card" style="--accent:#db2777;">
-              <img class="card-img" src="https://i.insider.com/699659e7a645d11881898fa0?width=1200&format=jpeg" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">Business Insider</div>
-                <div class="headline">Canadian travellers have not gotten over their beef with Trump, and snowbird destinations could feel the pinch</div>
-                <div class="summary">Canadian snowbird travel to the US is declining as travelers shift to domestic destinations, Mexico, and the Caribbean due to political hesitation around the current US administration. This represents a significant market reallocation that's already hitting US sun destinations while creating competitive opportunities elsewhere.</div>
+                <div class="card" style="--accent:#db2777;">
+                  <img class="card-img" src="https://i.insider.com/699659e7a645d11881898fa0?width=1200&format=jpeg" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">Business Insider<span class="timestamp">Feb 19</span></div>
+                    <div class="headline">Canadian travellers have not gotten over their beef with Trump, and snowbird destinations could feel the pinch</div>
+                    <div class="summary">Canadian snowbird travel patterns are shifting dramatically away from US destinations like Florida and Palm Springs toward Mexico and the Caribbean, driven by ongoing political sentiment. This represents a meaningful market realignment that's already hitting revenue for established US tourism operators.</div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This is a textbook market shift story for Growth & Marketing Ops — your US-focused tourism clients need to understand what's driving visitor loss, while alternative destinations should be mapping demand capture strategies. Brand & Creative becomes critical too if US destinations want to rebuild perception and messaging around safety, value, or political neutrality.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This is a textbook market shift that demands immediate strategic response from US-based destinations. Growth & Marketing Ops is the obvious play here—they need audience intelligence and go-to-market repositioning to win back Canadian travelers. But Brand & Creative matters too: destinations may need to actively address the elephant in the room rather than pretend sentiment doesn't exist.</div>
+                    </div>
+
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>This feels like the kind of thing your stakeholders are definitely worried about but maybe not saying out loud yet. Worth asking: what's your actual data showing about Canadian visitor trends, and does it match what you're hearing anecdotally?</li><li>Have you mapped out who's actually leaving and where they're going? Because that level of specificity would change how you talk about your destination—and to whom. That's a Growth & Marketing Ops question that needs answering before you spend another dollar.</li><li>This raises something bigger: if sentiment can move markets this dramatically, what does your brand narrative actually stand on? Is it defensible, or are you just betting on inertia?</li></ul>
+                    </div>
+
+                    <a href="https://www.businessinsider.com/canadians-are-still-unhappy-with-trump-hesitant-about-us-travels-2026-2" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
                 </div>
+                <div class="card" style="--accent:#db2777;">
+                  <img class="card-img" src="https://skift.com/wp-content/uploads/2026/02/Skift-Asia-Forum-2025-audience.jpg?resize=1024,682" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">Skift<span class="timestamp">Yesterday</span></div>
+                    <div class="headline">Built for the Leaders Defining Asia’s Travel in 2026</div>
+                    <div class="summary">Skift Asia Forum 2026 is positioning Asia as the epicenter of travel innovation, not a follower of global trends. The event brings together senior leaders to shape the region's travel strategy, signaling that decisions made in Asia now influence the entire industry.</div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>Have you noticed any shift in your visitor mix or booking patterns from Canada over the last 6-12 months? Because this isn't just sentiment — it's translating into real booking decisions.</li><li>If you're a US destination losing Canadian traffic, the question isn't how to win them back with a campaign. It's whether your brand story is actually addressing what's making them hesitant in the first place.</li><li>On the flip side, if you're Mexico or Caribbean-focused, you might have a window right now to capture mindshare from travelers who've historically defaulted to Florida or Arizona. Are you positioned to actually capitalize on that, or are you just hoping they show up?</li></ul>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This matters because your clients need to understand they're operating in a region that's setting the agenda. Growth & Marketing Ops becomes critical here—understanding what's emerging in Asia's travel ecosystem directly informs go-to-market strategy and competitive positioning. Brand & Creative is equally important: tourism brands need to reflect this shift from follower to leader in how they position themselves.</div>
+                    </div>
+
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>Asia's travel leaders aren't adapting to global playbooks anymore—they're writing them. If your business operates in this region, you're either leading that conversation or getting left behind. What does that mean for how you're currently positioned?</li><li>A lot of tourism clients we work with are still building brands and strategies that feel reactive. There's a real opportunity in Experience Design here—mapping out what these regional trends actually mean for your customer journey and messaging architecture before your competitors do.</li><li>Here's the uncomfortable question: Are you building your brand for 2024 customers or 2026 customers? Because the Asia Forum crowd is already three moves ahead on what travelers in this region will expect and value.</li></ul>
+                    </div>
+
+                    <a href="https://skift.com/2026/02/25/built-for-the-leaders-defining-asias-travel-in-2026/" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
                 </div>
+                <div class="card" style="--accent:#db2777;">
+                  <img class="card-img" src="https://image.hurimg.com/i/hurriyet/75/200x200/699d4acd7455d5f5e5915dc4.jpg" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">Hurriyet Daily News<span class="timestamp">2d ago</span></div>
+                    <div class="headline">Antalya braces for tourism boom with Ramadan, Easter holidays</div>
+                    <div class="summary">Antalya is preparing for a significant tourism surge this spring as Nevruz, Easter, and Ramadan holidays converge in March. Local hospitality leaders expect this rare calendar alignment to drive an early and strong rebound for the region's tourism sector.</div>
 
-                <a href="https://www.businessinsider.com/canadians-are-still-unhappy-with-trump-hesitant-about-us-travels-2026-2" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div>
-            <div class="card" style="--accent:#db2777;">
-              <img class="card-img" src="https://skift.com/wp-content/uploads/2026/02/Skift-Asia-Forum-2025-audience.jpg?resize=1024,682" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">Skift</div>
-                <div class="headline">Built for the Leaders Defining Asia’s Travel in 2026</div>
-                <div class="summary">Skift Asia Forum 2026 is positioning Asia as the source of global travel innovation, not a follower of Western trends. The event itself signals a fundamental shift in where tourism strategy and investment decisions originate — and it's happening in Bangkok this April.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This signals real demand volatility and seasonal concentration for Tourism clients — and it's a Growth & Marketing Ops moment. Clients need to understand how to capture that surge (timing, messaging, inventory), but also Experience Design matters if they're handling increased traffic across digital channels. The smart move is helping them prepare now, not scramble when it hits.</div>
+                    </div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This matters for any Tourism client with Asia ambitions or operations. It's a clear signal that regional strategy, brand positioning, and market intelligence work needs to account for Asia-first thinking rather than retrofitting global playbooks. Growth & Marketing Ops and Brand & Creative both come into play — clients need to understand how Asia's travel decisions are reshaping customer expectations globally, and they need positioning that reflects this reality rather than outdated regional hierarchies.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>Have you thought about how your booking flow and site performance scales when you're getting hit with three holiday waves at once? This isn't hypothetical for Mediterranean destinations.</li><li>There's a content and messaging angle here — Experience Design. Are you speaking to Ramadan travelers differently than Easter travelers? Most hotels aren't, and they're leaving money on the table.</li><li>This kind of calendar clustering happens every few years. The question isn't whether you'll get the spike. It's whether you're built to convert it. Are you?</li></ul>
+                    </div>
+
+                    <a href="https://www.hurriyetdailynews.com/antalya-braces-for-tourism-boom-with-ramadan-easter-holidays-219261" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
                 </div>
+                <div class="card" style="--accent:#db2777;">
+                  <img class="card-img" src="https://live-production.wcms.abc-cdn.net.au/6b8e47b479871dc2ba0847e166df9159?impolicy=wcms_watermark_news&cropH=2813&cropW=5000&xPos=0&yPos=145&width=862&height=485&imformat=generic" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">ABC News (AU)<span class="timestamp">Yesterday</span></div>
+                    <div class="headline">Tourists urged to return to the Great Ocean Road after fires and floods</div>
+                    <div class="summary">Natural disasters decimated businesses along Australia's Great Ocean Road over summer, and now tourism operators are launching a coordinated push to rebuild visitor confidence and get people back to the region. It's a case study in crisis recovery for a tourism destination that lost significant revenue and reputation in one season.</div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>Asia stopped being a market that adopts travel trends and became the market that sets them. That changes everything about how we think about your brand's relevance in the next 18 months.</li><li>There's a real question here: if your brand strategy was built on global-down positioning, are you actually speaking to how Asian travelers are defining what travel means now? That's a Growth & Marketing Ops conversation waiting to happen.</li><li>Here's what I wonder — if the innovation is happening in Asia first, where should your creative and product thinking actually be centered? Not adapted for Asia. Centered there.</li></ul>
-                </div>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This is squarely a Growth & Marketing Ops play — these communities need a structured recovery campaign, not just hope. Brand & Creative matters too: destinations hit by disaster need messaging that's honest about what happened but forward-looking about what's worth visiting again. The real work is repositioning the narrative and giving travelers reasons to come back.</div>
+                    </div>
 
-                <a href="https://skift.com/2026/02/25/built-for-the-leaders-defining-asias-travel-in-2026/" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div>
-            <div class="card" style="--accent:#db2777;">
-              <img class="card-img" src="https://image.hurimg.com/i/hurriyet/75/200x200/699d4acd7455d5f5e5915dc4.jpg" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">Hurriyet Daily News</div>
-                <div class="headline">Antalya braces for tourism boom with Ramadan, Easter holidays</div>
-                <div class="summary">Antalya is expecting a significant tourism surge this spring as Nevruz, Easter, and Ramadan holidays converge in March. The timing creates an unusual window for early-season volume that Turkish tourism operators are actively preparing for.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>I'm curious whether these businesses have talked to each other about what they're actually saying to visitors, or if everyone's running their own recovery story. That fragmentation is probably costing them.</li><li>This feels like a moment where coordinated content strategy and SEO work could actually move the needle — getting ahead of the disaster narrative with real stories about reopenings and resilience.</li><li>The harder question: are they thinking about this as a one-time recovery campaign, or are they building something that makes the region more resilient to the next crisis? Because there will be another one.</li></ul>
+                    </div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This matters because it's a demand signal with real commercial stakes—clients need to be ready operationally and strategically. Growth & Marketing Ops becomes critical here: clients need to understand demand patterns, optimize booking flows, and time campaigns around these holiday windows. But it also touches Experience Design if properties haven't stress-tested their digital infrastructure for sudden traffic spikes.</div>
-                </div>
-
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>Have you mapped out how your booking experience actually performs during these holiday convergences? Most properties haven't, and it shows in their abandonment rates.</li><li>This is a Growth & Marketing Ops play: you need demand forecasting, dynamic pricing, and campaign sequencing built into your stack before March hits. If you're not ready now, you're already late.</li><li>The bigger question: are you thinking of these holidays as one-off revenue events, or as annual planning anchors that reshape how you staff, stock, and message the whole year?</li></ul>
-                </div>
-
-                <a href="https://www.hurriyetdailynews.com/antalya-braces-for-tourism-boom-with-ramadan-easter-holidays-219261" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div>
-            <div class="card" style="--accent:#db2777;">
-              <img class="card-img" src="https://live-production.wcms.abc-cdn.net.au/6b8e47b479871dc2ba0847e166df9159?impolicy=wcms_watermark_news&cropH=2813&cropW=5000&xPos=0&yPos=145&width=862&height=485&imformat=generic" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">ABC News (AU)</div>
-                <div class="headline">Tourists urged to return to the Great Ocean Road after fires and floods</div>
-                <div class="summary">Natural disasters decimated tourism revenue along Australia's Great Ocean Road, forcing business owners to actively court visitors back to the region. It's a textbook case of destination recovery—communities need to rebuild both infrastructure and visitor confidence simultaneously.</div>
-
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This is squarely a Growth & Marketing Ops play, but it opens doors across all four service areas. These towns need immediate reputation management and a coordinated campaign to shift perception from 'disaster zone' back to 'destination.' Brand & Creative could reframe the narrative. Experience Design matters because visitors will have real anxiety about safety and access—that journey needs to be deliberately designed. And Software & Technology underpins everything if these businesses are modernizing their digital presence post-recovery.</div>
-                </div>
-
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>Have you thought about what happens to a destination's narrative after a crisis? These communities are fighting perception, not just logistics. That's interesting strategically.</li><li>If you've got tourism clients in climate-vulnerable regions, this is the moment to ask: do you have a recovery narrative ready? Or are you waiting until the next fire to figure out your messaging?</li><li>The real question isn't 'how do we get tourists back?' It's 'who are we to these visitors now, and why should they trust us again?' That changes everything about how you communicate.</li></ul>
-                </div>
-
-                <a href="https://www.abc.net.au/news/2026-02-26/great-ocean-road-tourism-post-bushfires-floods/106386950" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div></div>
+                    <a href="https://www.abc.net.au/news/2026-02-26/great-ocean-road-tourism-post-bushfires-floods/106386950" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
+                </div></div>
         </section>
         <section id="fintech" style="--accent:#7c3aed;">
           <div class="section-header">
@@ -852,94 +902,94 @@
             <div class="section-meta">4 articles this week</div>
           </div>
           <div class="grid">
-            <div class="card" style="--accent:#7c3aed;">
-              <img class="card-img" src="https://ritholtz.com/wp-content/uploads/2025/05/mib_2025.png" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">Ritholtz.com</div>
-                <div class="headline">Transcript: Hilary Allen on Fintech Dystopia</div>
-                <div class="summary">Hilary Allen, a financial regulation expert, discusses the risks and failures embedded in fintech's current trajectory—touching on systemic fragility, regulatory gaps, and the gap between fintech's promises and reality. It's a sharp critique of an industry that often prioritizes speed and disruption over stability and accountability.</div>
+                <div class="card" style="--accent:#7c3aed;">
+                  <img class="card-img" src="https://ritholtz.com/wp-content/uploads/2025/05/mib_2025.png" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">Ritholtz.com<span class="timestamp">2d ago</span></div>
+                    <div class="headline">Transcript: Hilary Allen on Fintech Dystopia</div>
+                    <div class="summary">Hilary Allen, a critic of fintech's systemic risks, discusses the industry's structural vulnerabilities and potential for financial instability. The conversation examines whether fintech innovation is genuinely solving problems or creating new ones—a question that matters for anyone building products or brands in the space.</div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This matters because fintech clients are increasingly facing a credibility problem. Allen's arguments—whether you agree with them or not—are circulating in serious circles. Brand & Creative becomes critical here: how do fintech companies talk about trust, safety, and regulation without sounding defensive or hollow? Experience Design also applies: if users are becoming skeptical of fintech narratives, the burden falls on clear, honest product communication.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This is directly relevant for Brand & Creative and Growth & Marketing Ops work. Fintech companies are increasingly facing a credibility gap between their innovation narrative and public skepticism about real value and risk. Clients need to understand how their positioning either acknowledges these legitimate concerns or gets exposed for dodging them.</div>
+                    </div>
+
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>Allen's critique is becoming table stakes in fintech conversations—especially with regulators, institutional investors, and skeptical consumers. If your brand story doesn't account for this shift in how people think about fintech, you're already behind.</li><li>There's a real opportunity in Experience Design and Brand & Creative to help fintech clients communicate transparently about risk and oversight, not just speed and disruption. That's where trust actually gets built now.</li><li>The question worth asking: Is your fintech client positioned to lead the conversation about fintech's real problems, or are they still selling the old 'disruption' story that Allen and others have already dismantled?</li></ul>
+                    </div>
+
+                    <a href="https://ritholtz.com/2026/02/transcript-hilary-allen/" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
                 </div>
+                <div class="card" style="--accent:#7c3aed;">
+                  <img class="card-img" src="https://gizmodo.com/app/uploads/2024/10/GettyImages-2154161024.jpg" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">Gizmodo.com<span class="timestamp">2d ago</span></div>
+                    <div class="headline">Anthropic’s Claude Comes for Knowledge Work as Markets Freak Out</div>
+                    <div class="summary">Anthropic released Claude Cowork with industry-specific plug-ins, starting with a Legal version that's rattling investors. The move signals AI assistants are moving from general-purpose tools into specialized knowledge work, threatening to reshape how professionals across industries operate.</div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>I'm curious what keeps your leadership up at night about how your brand is perceived by regulators and mainstream financial institutions. Because that conversation is happening in rooms you're not in.</li><li>Your brand story probably leans on innovation and access. But if the industry narrative is shifting toward 'fintech dystopia,' that positioning might need an honest reckoning—not a rebrand, but a recalibration. That's where Brand & Creative comes in: helping you say what's actually true about what you do.</li><li>Here's the hard question: if fintech's foundational story is being questioned at this scale, does your company have a differentiated answer to 'why should people trust us'—or are you still riding the category wave?</li></ul>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">For Fintech clients, this matters because AI is about to touch everything from compliance to customer service to underwriting. Experience Design and Software & Technology become critical — you need to either build these tools or redesign your workflows around them. The firms that figure out how to integrate Claude-like systems cleanly into their user experience win; the ones that bolt them on clumsily lose trust.</div>
+                    </div>
+
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>Have you thought about what happens to your product when your users can just ask Claude to do half of it? Not as a threat — as an opportunity to rethink what you're actually selling.</li><li>If your Fintech product involves knowledge work — compliance review, loan origination, regulatory filing — you should be testing these plug-ins now. Not to replace your team, but to understand the UX your competitors are already exploring.</li><li>The real question: Are you building the interface between your users and AI, or are you building something that becomes obsolete the moment AI gets good enough at the work itself?</li></ul>
+                    </div>
+
+                    <a href="https://gizmodo.com/anthropics-claude-comes-for-knowledge-work-as-markets-freak-out-2000725881" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
                 </div>
+                <div class="card" style="--accent:#7c3aed;">
+                  <img class="card-img" src="https://s.yimg.com/ny/api/res/1.2/jjC.XajBDsuoJ52FT7CCfQ--/YXBwaWQ9aGlnaGxhbmRlcjt3PTEyMDA7aD02NzU-/https://media.zenfs.com/en/banking_dive_717/7c1c12af8976847601a3bca86b3e4d41" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">Bankingdive.com<span class="timestamp">6d ago</span></div>
+                    <div class="headline">TD aims to retain its branch ‘essence’ amid brand refresh</div>
+                    <div class="summary">TD Bank is refreshing its brand while doubling down on digital banking, trying to balance modernization with the trust and relationship equity built through its physical branches. The bank sees this as critical to retaining customers as consumer expectations shift toward omnichannel experiences.</div>
 
-                <a href="https://ritholtz.com/2026/02/transcript-hilary-allen/" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div>
-            <div class="card" style="--accent:#7c3aed;">
-              <img class="card-img" src="https://ritholtz.com/wp-content/uploads/2025/05/mib_2025.png" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">Ritholtz.com</div>
-                <div class="headline">MiB: Hilary Allen on Fintech Dystopia</div>
-                <div class="summary">Hilary Allen, a banking law professor and former Financial Crisis Inquiry Commission staffer, discusses the regulatory and systemic risks embedded in fintech's rapid growth. The conversation examines whether the industry's innovation outpace is creating new forms of financial fragility that regulators haven't caught up with.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This is a textbook Brand & Creative challenge intersecting with Experience Design. TD is wrestling with what a lot of Fintech-adjacent incumbents face: how to evolve without losing what made you trusted in the first place. The real work isn't the logo refresh—it's making sure the branch 'essence' actually translates to digital touchpoints, which means experience design and messaging have to work in lockstep.</div>
+                    </div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This matters for Brand & Creative and Growth & Marketing Ops. Fintech clients are increasingly operating in a credibility crisis — they need to signal stability and regulatory awareness to both consumers and institutional partners, not just move fast. The narrative around fintech is shifting from disruption to responsibility, and that's a positioning problem that needs solving now.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>TD's tension here is interesting—they're saying digital-first but branch-essential. That's not a brand problem until it becomes an experience problem. How does that 'essence' actually show up in your app, your website, your support flows?</li><li>There's a gap between what they're trying to communicate and what customers will actually feel across channels. That's where Experience Design comes in—personas, journey mapping, and testing whether the refresh actually lands the way they intend.</li><li>If a legacy bank can't figure out how to carry trust and relationship through digital, what does that say about pure-play Fintechs trying to build trust from scratch? That's worth thinking about differently.</li></ul>
+                    </div>
+
+                    <a href="https://www.bankingdive.com/news/td-bank-consumer-deposits-retail-banking-digital-brand-refresh/812611/" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
                 </div>
+                <div class="card" style="--accent:#7c3aed;">
+                  <img class="card-img" src="https://gizmodo.com/app/uploads/2025/10/gizmodo-social-1200x675-1.jpg" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">Gizmodo.com<span class="timestamp">Yesterday</span></div>
+                    <div class="headline">Meta Gets Back into Crypto, Plans Stablecoin Integration Later This Year</div>
+                    <div class="summary">Meta is launching stablecoin payments across its apps after years away from crypto, issuing RFPs to third-party providers with a target launch later this year. This is a major shift—Meta's betting that embedded payments will work where Libra and Diem failed, and it signals a real inflection point in how big tech platforms are approaching financial services.</div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>There's a real conversation happening in policy circles about fintech safety that most fintech brands aren't addressing directly. Your messaging probably avoids regulation entirely, which is starting to read as tone-deaf to anyone paying attention.</li><li>We should map out how your brand addresses (or doesn't) the systemic risk narrative. That's a Growth & Marketing Ops conversation — what's your actual stance here, and where should you be visible in this debate?</li><li>If regulators are genuinely worried about fintech creating new kinds of instability, the winners won't be the fastest or the flashiest. They'll be the ones that got out ahead on transparency and trust. How does your product and brand positioning reflect that?</li></ul>
-                </div>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This matters for fintech clients because it's a validation moment. Meta's move legitimizes stablecoins as a mainstream payment rail and will force every fintech to reckon with their position on embedded finance. Experience Design and Software & Technology are most relevant here—clients will need to rethink payment UX and integration architecture, but there's also a Brand & Creative play around trust and positioning when tech giants are rewriting the rules.</div>
+                    </div>
 
-                <a href="https://ritholtz.com/2026/02/mib-hilary-allen/" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div>
-            <div class="card" style="--accent:#7c3aed;">
-              <img class="card-img" src="https://gizmodo.com/app/uploads/2024/10/GettyImages-2154161024.jpg" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">Gizmodo.com</div>
-                <div class="headline">Anthropic’s Claude Comes for Knowledge Work as Markets Freak Out</div>
-                <div class="summary">Anthropic released Claude Cowork, an AI assistant with industry-specific plugins including a Legal module, designed to automate knowledge work. The move signals a shift toward AI agents that can handle specialized, high-value tasks—and it's already rattling markets worried about displacement and competitive advantage.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>So Meta's actually doing this again, but differently this time. Worth asking ourselves: what changed? Why does stablecoin infrastructure feel inevitable now when Libra felt like a non-starter five years ago?</li><li>Their third-party provider model is interesting from a product standpoint—it's basically saying they're not building the rails themselves. For clients, that opens a design question: how do you make a payment experience feel native when the infrastructure is outsourced?</li><li>If Meta pulls this off at scale, the real disruption isn't the stablecoin. It's that billions of people will suddenly expect frictionless cross-app payments. That's a massive design and regulatory challenge for fintech companies still thinking in silos.</li></ul>
+                    </div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This matters for Fintech clients because compliance, legal review, and regulatory documentation are core friction points in the industry. Experience Design and Software & Technology are most relevant here—Fintech companies will need to rethink their knowledge workflows and potentially integrate or compete with tools like this. The real question isn't whether to adopt Claude; it's how to design products and platforms that stay defensible when AI can now handle the work your team currently does.</div>
-                </div>
-
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>Have you thought about what happens to your customer experience when your back-office knowledge work gets automated? Because your competitors definitely have.</li><li>There's a real design opportunity here: if your processes are currently built around human gatekeeping—legal sign-off, compliance checks, KYC validation—those workflows might need to be completely redesigned for an AI-augmented world. That's Experience Design territory.</li><li>The fintech firms that win in the next 18 months probably won't be the ones who buy Claude off-the-shelf. They'll be the ones who've already rebuilt their operations around what AI can do, so they're actually faster and more defensible than generalist tools.</li></ul>
-                </div>
-
-                <a href="https://gizmodo.com/anthropics-claude-comes-for-knowledge-work-as-markets-freak-out-2000725881" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div>
-            <div class="card" style="--accent:#7c3aed;">
-              <img class="card-img" src="https://s.yimg.com/ny/api/res/1.2/jjC.XajBDsuoJ52FT7CCfQ--/YXBwaWQ9aGlnaGxhbmRlcjt3PTEyMDA7aD02NzU-/https://media.zenfs.com/en/banking_dive_717/7c1c12af8976847601a3bca86b3e4d41" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">Bankingdive.com</div>
-                <div class="headline">TD aims to retain its branch ‘essence’ amid brand refresh</div>
-                <div class="summary">TD Bank is refreshing its brand while doubling down on digital banking, trying to modernize without losing the trust and relationship-driven positioning that keeps customers loyal. It's a classic fintech tension: how do you stay familiar while becoming something new?</div>
-
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This is a textbook Brand & Creative + Experience Design play. TD's challenge—keeping the 'essence' while going digital—is exactly where most established banks get stuck. For our clients, it's a reminder that a rebrand only works if your digital experience actually matches the new positioning. Half measures fail.</div>
-                </div>
-
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>TD's doing what most legacy banks try and bungle: they're not throwing out the old identity, they're evolving it. Makes you wonder how many of your customers would actually stick around if you redesigned everything versus refined what already works.</li><li>There's a real design system opportunity buried in this—if you're keeping brand essence while moving to digital-first, your UI, your copy, your customer journey all need to speak the same dialect. That's where most banks fumble the handoff.</li><li>Here's the thing: if you're a fintech that's scaled past your founding identity, is staying 'essential' actually your job, or should you be asking whether your customers even want you to? Maybe the refresh isn't about keeping them comfortable—it's about earning new ones.</li></ul>
-                </div>
-
-                <a href="https://www.bankingdive.com/news/td-bank-consumer-deposits-retail-banking-digital-brand-refresh/812611/" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div></div>
+                    <a href="https://gizmodo.com/meta-gets-back-into-crypto-plans-stablecoin-integration-later-this-year-2000725733" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
+                </div></div>
         </section>
         <section id="artificial-intelligence" style="--accent:#0891b2;">
           <div class="section-header">
@@ -949,105 +999,109 @@
             <div class="section-meta">4 articles this week</div>
           </div>
           <div class="grid">
-            <div class="card" style="--accent:#0891b2;">
-              <img class="card-img" src="https://media.wired.com/photos/699879d490ce1a01f1ba1ac0/191:100/w_1280,c_limit/GettyImages-2250413446.jpg" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">Wired</div>
-                <div class="headline">How to Hide Google’s AI Overviews From Your Search Results</div>
-                <div class="summary">Google's AI Overviews are now prominent enough that users actively want to disable them, signaling real friction in how AI is being integrated into everyday products. This matters because it shows the gap between what companies build and what users actually want—a tension that's only going to grow as AI features proliferate across search, email, and social.</div>
+                <div class="card" style="--accent:#0891b2;">
+                  <img class="card-img" src="https://media.wired.com/photos/699879d490ce1a01f1ba1ac0/191:100/w_1280,c_limit/GettyImages-2250413446.jpg" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">Wired<span class="timestamp">4d ago</span></div>
+                    <div class="headline">How to Hide Google’s AI Overviews From Your Search Results</div>
+                    <div class="summary">Google's AI Overviews are now so pervasive that users are actively seeking ways to disable them—either through query adjustments or switching platforms entirely. This signals a critical moment where AI integration has outpaced user trust, forcing both Google and its competitors to reckon with search behavior that's fundamentally changing.</div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This is a wake-up call for AI companies about Experience Design and Growth & Marketing Ops. If users are hunting for ways to turn off your AI feature, you've got a UX problem, not a feature problem. The article highlights why AI products need ruthless user testing and honest positioning—not just aggressive deployment.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This is a wake-up call for AI companies shipping features without considering the user backlash cycle. Experience Design and Growth & Marketing Ops matter most here—you can't just push AI at people and expect adoption. The companies winning this moment are the ones mapping how users actually want to interact with AI, then building trust through that clarity.</div>
+                    </div>
+
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>Users are voting with their feet on AI integration. The question isn't whether your AI feature is technically good—it's whether people want it on by default. That's a design and positioning problem, not just an engineering one.</li><li>Have you mapped what happens when your customers actively try to disable your AI? That's Experience Design work that most AI companies skip, and it's becoming table stakes.</li><li>If people are choosing other search engines to escape Google's AI, what does that tell you about where the real differentiation happens? It's not the AI itself anymore—it's the choice, control, and transparency around it.</li></ul>
+                    </div>
+
+                    <a href="https://www.wired.com/story/how-to-hide-google-ai-overviews-from-your-search-results/" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
                 </div>
+                <div class="card" style="--accent:#0891b2;">
+                  <img class="card-img" src="https://a.fsdn.com/sd/topics/business_64.png" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">Slashdot.org<span class="timestamp">Feb 19</span></div>
+                    <div class="headline">Accenture Links Staff Promotions To Use of AI Tools</div>
+                    <div class="summary">Accenture is now tracking employee adoption of its internal AI tools and making regular use a requirement for promotion to leadership roles. It's a blunt signal that enterprise adoption isn't organic—companies are having to engineer culture change around AI, not wait for it to happen naturally.</div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>Google's AI Overviews are becoming something people disable instead of use. That's the opposite of adoption. It makes you wonder what your own AI features look like to people who didn't ask for them.</li><li>There's a real opportunity in Experience Design here: companies building AI tools need personas and journey maps that account for AI skeptics, not just AI enthusiasts. Right now most teams skip that.</li><li>The bigger question: if your AI product needs an opt-out button to feel acceptable, did you build something people actually want, or something you wanted to build?</li></ul>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This matters for Growth & Marketing Ops and Brand & Creative work with AI clients. It shows that internal adoption and capability-building are becoming competitive advantages, which means clients need to think about how they're communicating AI value to their own teams, not just to customers. There's also a messaging play here—how do you position AI tools in ways that feel enabling rather than surveillance-heavy, which is the real tension Accenture is surfacing.</div>
+                    </div>
+
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>I'm curious whether your team sees adoption differently when it's mandated versus when it's optional. Accenture's approach is honest about the friction, but it also raises a question: are you selling AI to people who actually want it, or are you selling it to people who feel like they have to use it?</li><li>This is a Brand & Creative moment. How you talk about AI internally shapes everything—your EVP, your hiring story, your positioning in market. If your messaging is 'AI is required,' versus 'AI is a tool we're building for people who want to move faster,' those are completely different cultures.</li><li>Here's the harder question: if adoption only moves when you tie it to promotion, what does that tell you about the product experience itself? Worth asking whether the friction is the tool, the training, or the actual value proposition.</li></ul>
+                    </div>
+
+                    <a href="https://slashdot.org/story/26/02/19/1622257/accenture-links-staff-promotions-to-use-of-ai-tools" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
                 </div>
+                <div class="card" style="--accent:#0891b2;">
+                  <img class="card-img" src="https://media.wired.com/photos/699e2d79d54c22d6c9a6a418/191:100/w_1280,c_limit/Google%20Gemini%20Automation%20on%20Galaxy%20S26%20SOURCE%20Julian%20Chokkattu(2).jpg" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">Wired<span class="timestamp">Yesterday</span></div>
+                    <div class="headline">Gemini Can Now Book You an Uber or Order a DoorDash Meal on Your Phone. Here's How It Works</div>
+                    <div class="summary">Google's Gemini AI can now automate tasks within third-party apps like Uber and DoorDash on Samsung phones, marking a shift from voice assistants that promised but failed to deliver real task automation a decade ago. This is meaningful because it shows AI agents are finally moving beyond chat interfaces into actual, practical control of user workflows.</div>
 
-                <a href="https://www.wired.com/story/how-to-hide-google-ai-overviews-from-your-search-results/" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div>
-            <div class="card" style="--accent:#0891b2;">
-              <img class="card-img" src="https://a.fsdn.com/sd/topics/business_64.png" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">Slashdot.org</div>
-                <div class="headline">Accenture Links Staff Promotions To Use of AI Tools</div>
-                <div class="summary">Accenture is now tying staff promotions to measurable adoption of its internal AI tools, signaling that enterprise-wide AI integration has moved from optional to mandatory for career advancement. This is a watershed moment: a $60B consulting firm is essentially saying AI competency isn't a nice-to-have anymore—it's table stakes for leadership.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This matters for Experience Design and Software & Technology clients building AI products. The real test now isn't whether AI can talk—it's whether it can actually *do* things users care about without breaking their workflow. If you're building an AI agent or integrating AI into your platform, you're watching how Google solves the trust, permission, and UX problems that killed Siri shortcuts.</div>
+                    </div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This matters enormously for AI clients because it exposes a massive internal communication and change management gap. Most organizations talk about AI adoption without actually embedding it into how people get rewarded and promoted. For Matic, this surfaces work in both Brand & Creative (how do you position AI as culturally essential, not threatening?) and Growth & Marketing Ops (how do you create internal momentum and measure adoption like Accenture is doing?). The real opportunity is helping AI vendors understand that their go-to-market strategy needs to account for the fact that their buyers are now being measured on this stuff.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>The fact that this took a decade to work tells us something: building AI that reliably executes real tasks is brutally hard. Your customers know it too. What does that mean for how you position what your AI actually does versus what it promises?</li><li>If you're designing or building an AI product, the experience design here is everything—how does a user trust an AI to book their ride or order their food without seeing every step? That's a real UX problem we should be talking through.</li><li>Here's the question that should keep you up: when AI agents become genuinely useful at task automation, does that change what your product is, who it's for, or how you go to market entirely?</li></ul>
+                    </div>
+
+                    <a href="https://www.wired.com/story/google-gemini-task-automation-galaxy-s26-uber-doordash/" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
                 </div>
+                <div class="card" style="--accent:#0891b2;">
+                  <img class="card-img" src="https://gizmodo.com/app/uploads/2024/11/password-art-getty.jpg" alt="" onerror="this.style.display='none'">
+                  <div class="card-body">
+                    <div class="source">Gizmodo.com<span class="timestamp">Feb 19</span></div>
+                    <div class="headline">AI-Generated Passwords Are Apparently Quite Easy to Crack</div>
+                    <div class="summary">Researchers found that AI language models generate predictable passwords because they tend to repeat patterns and favor common character combinations. The finding exposes a real security gap for any AI product using LLMs to generate or handle sensitive credentials.</div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>Accenture just turned AI adoption into a performance metric. That's not strategy—that's pressure. I'm curious whether your customers are feeling that same pressure from their boards, and whether they actually have a coherent story about what it means to 'use AI' in their organization.</li><li>There's a messaging problem hiding in here. If you're forcing adoption without helping people understand why or how, you get compliance theater, not transformation. That's where brand and content strategy actually move the needle—it's the difference between 'you have to use AI' and 'here's why this changes what we can do.'</li><li>What happens when promotion is tied to a metric but the metric is vague? Accenture's tracking 'regular adoption'—but what does that actually mean? If your product or service is being adopted as a compliance checkbox rather than a genuine tool, you've won the battle and lost the war. Are you built for that?</li></ul>
-                </div>
+                    <div class="meta-block">
+                      <div class="meta-label">Why it matters</div>
+                      <div class="meta-text">This is a direct hit for Software & Technology clients building AI products — it's a concrete security vulnerability they need to know about and design around. It also matters for Brand & Creative teams, since security failures become brand damage fast. Any AI company promoting automation features needs to understand where those features actually create risk.</div>
+                    </div>
 
-                <a href="https://slashdot.org/story/26/02/19/1622257/accenture-links-staff-promotions-to-use-of-ai-tools" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div>
-            <div class="card" style="--accent:#0891b2;">
-              <img class="card-img" src="https://media.wired.com/photos/699e2d79d54c22d6c9a6a418/191:100/w_1280,c_limit/Google%20Gemini%20Automation%20on%20Galaxy%20S26%20SOURCE%20Julian%20Chokkattu(2).jpg" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">Wired</div>
-                <div class="headline">Gemini Can Now Book You an Uber or Order a DoorDash Meal on Your Phone. Here's How It Works</div>
-                <div class="summary">Google's Gemini is now integrating with third-party apps on Samsung phones, automating real tasks like booking rides and ordering food instead of just talking about doing them. This marks a meaningful shift from voice assistant vaporware toward actual agent capabilities that work across the mobile ecosystem.</div>
+                    <div class="meta-block">
+                      <div class="meta-label">Talking points</div>
+                      <ul class="talking-points"><li>Have you thought about how your AI features could become a security liability? Because users are starting to notice when convenience trades away safety.</li><li>If you're using LLMs anywhere in your product — even in non-obvious places — this is worth an audit. We could map your architecture and flag where predictability becomes a problem.</li><li>This feels like the first of many 'AI does X, but it's actually worse than the old way' stories. How are you building trust when the innovation itself might be the vulnerability?</li></ul>
+                    </div>
 
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This matters for AI clients because it signals the market is finally moving past demos into real user behavior change. Experience Design and Software & Technology become critical here — clients need to understand how their products should work *with* agents like this, not against them, and they need UX strategies for a world where users delegate tasks to AI instead of doing them manually.</div>
-                </div>
-
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>The interesting question isn't whether Gemini works — it's whether your product is even visible to an AI agent trying to accomplish something on behalf of a user. That changes everything about how you design for discovery.</li><li>If your AI product isn't thinking about agent-to-agent integration and API-first architecture, you're already behind. This is a Software & Technology conversation about platform readiness, not just a feature conversation.</li><li>Here's the hard one: if AI agents start owning user relationships through task automation, what's your brand's role? Does your positioning still work when the user never sees your interface?</li></ul>
-                </div>
-
-                <a href="https://www.wired.com/story/google-gemini-task-automation-galaxy-s26-uber-doordash/" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div>
-            <div class="card" style="--accent:#0891b2;">
-              <img class="card-img" src="https://gizmodo.com/app/uploads/2024/11/password-art-getty.jpg" alt="" onerror="this.style.display='none'">
-              <div class="card-body">
-                <div class="source">Gizmodo.com</div>
-                <div class="headline">AI-Generated Passwords Are Apparently Quite Easy to Crack</div>
-                <div class="summary">Researchers found that AI-generated passwords are weaker than expected because LLMs tend to repeat patterns and favor certain character combinations, making them easier to crack. It's a concrete reminder that slapping AI into existing processes—even something as straightforward as password generation—can introduce new security vulnerabilities if you're not thinking critically about what the model actually does.</div>
-
-                <div class="meta-block">
-                  <div class="meta-label">Why it matters</div>
-                  <div class="meta-text">This matters most for Software & Technology clients building AI features or integrating LLMs into their products. They need to stress-test assumptions about where AI actually adds value versus where it introduces risk. There's also a Growth & Marketing Ops angle: this kind of news affects how AI companies should talk about their capabilities publicly, especially if security or reliability are selling points.</div>
-                </div>
-
-                <div class="meta-block">
-                  <div class="meta-label">Talking points</div>
-                  <ul class="talking-points"><li>So the irony is that companies are rushing to slap AI onto everything, but sometimes the old way was actually better. Makes you wonder what else we're doing with LLMs that sounds clever until someone actually tests it.</li><li>If you're building something with AI at the core, your security story needs to account for how the model behaves—not just assume it'll work like a human or a traditional algorithm would. That's a Software & Technology conversation worth having early.</li><li>There's a positioning question here: if your AI product is supposed to make something easier or safer, what happens when the first real test shows it doesn't? How do you talk about that honestly without undermining the whole category?</li></ul>
-                </div>
-
-                <a href="https://gizmodo.com/ai-generated-passwords-are-apparently-quite-easy-to-crack-2000723660" target="_blank" class="read-more">
-                  Read full article <span class="arrow">→</span>
-                </a>
-              </div>
-            </div></div>
+                    <a href="https://gizmodo.com/ai-generated-passwords-are-apparently-quite-easy-to-crack-2000723660" target="_blank" class="read-more">
+                      Read full article <span class="arrow">→</span>
+                    </a>
+                  </div>
+                </div></div>
         </section>
 </main>
 
 <footer class="site-footer">
-  <div class="footer-logo">Matic Digital</div>
-  <div class="footer-meta">Industry Digest · February 26, 2026 · Internal Use Only</div>
+  <div class="footer-left">
+    <div class="footer-logo">Matic Digital</div>
+    <div class="footer-divider"></div>
+    <div class="footer-tagline">Weekly Industry Intelligence</div>
+  </div>
+  <div class="footer-meta">Week of February 26, 2026 · Internal Use Only</div>
 </footer>
 
 <script>
   function copyURLs(btn) {
-    const urls = ["https://hardware.slashdot.org/story/26/02/24/206224/the-us-had-a-big-battery-boom-last-year", "https://newatlas.com/energy/molecular-solar-thermal-energy-storage-liquid/", "https://newatlas.com/energy/sodium-ion-batteries-water/", "https://www.sciencedaily.com/releases/2026/02/260218031603.htm", "https://www.scientificamerican.com/article/online-influencer-faces-confirmation-hearing-for-surgeon-general-in-u-s/", "https://gothamist.com/news/nyc-nurses-strike-ends-after-newyork-presbyterian-nurses-ratify-new-contract", "https://www.technologyreview.com/2026/02/23/1133522/peptides-are-everywhere-heres-what-you-need-to-know/", "https://nextbigwhat.com/2026/02/25/oura-introduces-ai-model-tailored-for-womens-reproductive-health/", "https://www.cmswire.com/digital-marketing/from-awareness-to-orchestration-rethinking-audio-in-the-martech-stack/", "https://www.globenewswire.com/news-release/2026/02/25/3244514/0/en/Marketing-Technology-MarTech-Market-Worth-USD-3-28-Trillion-by-2035-Driven-by-AI-Agile-Marketing-and-Privacy-First-Personalization.html", "https://indianexpress.com/article/technology/indias-shopping-journey-is-moving-to-whatsapp-finds-meta-rai-whitepaper-10552049/", "http://digiday.com/marketing/can-agencies-fix-the-ai-disconnect-between-the-c-suite-and-marketing-teams-boathouse-is-trying-to/", "https://www.businessinsider.com/canadians-are-still-unhappy-with-trump-hesitant-about-us-travels-2026-2", "https://skift.com/2026/02/25/built-for-the-leaders-defining-asias-travel-in-2026/", "https://www.hurriyetdailynews.com/antalya-braces-for-tourism-boom-with-ramadan-easter-holidays-219261", "https://www.abc.net.au/news/2026-02-26/great-ocean-road-tourism-post-bushfires-floods/106386950", "https://ritholtz.com/2026/02/transcript-hilary-allen/", "https://ritholtz.com/2026/02/mib-hilary-allen/", "https://gizmodo.com/anthropics-claude-comes-for-knowledge-work-as-markets-freak-out-2000725881", "https://www.bankingdive.com/news/td-bank-consumer-deposits-retail-banking-digital-brand-refresh/812611/", "https://www.wired.com/story/how-to-hide-google-ai-overviews-from-your-search-results/", "https://slashdot.org/story/26/02/19/1622257/accenture-links-staff-promotions-to-use-of-ai-tools", "https://www.wired.com/story/google-gemini-task-automation-galaxy-s26-uber-doordash/", "https://gizmodo.com/ai-generated-passwords-are-apparently-quite-easy-to-crack-2000723660"];
+    const urls = ["https://hardware.slashdot.org/story/26/02/24/206224/the-us-had-a-big-battery-boom-last-year", "https://newatlas.com/energy/molecular-solar-thermal-energy-storage-liquid/", "https://newatlas.com/energy/sodium-ion-batteries-water/", "https://www.sciencedaily.com/releases/2026/02/260218031603.htm", "https://www.scientificamerican.com/article/online-influencer-faces-confirmation-hearing-for-surgeon-general-in-u-s/", "https://gothamist.com/news/nyc-nurses-strike-ends-after-newyork-presbyterian-nurses-ratify-new-contract", "https://www.technologyreview.com/2026/02/23/1133522/peptides-are-everywhere-heres-what-you-need-to-know/", "https://nextbigwhat.com/2026/02/25/oura-introduces-ai-model-tailored-for-womens-reproductive-health/", "https://www.cmswire.com/digital-marketing/from-awareness-to-orchestration-rethinking-audio-in-the-martech-stack/", "https://www.globenewswire.com/news-release/2026/02/25/3244514/0/en/Marketing-Technology-MarTech-Market-Worth-USD-3-28-Trillion-by-2035-Driven-by-AI-Agile-Marketing-and-Privacy-First-Personalization.html", "https://indianexpress.com/article/technology/indias-shopping-journey-is-moving-to-whatsapp-finds-meta-rai-whitepaper-10552049/", "http://digiday.com/marketing/can-agencies-fix-the-ai-disconnect-between-the-c-suite-and-marketing-teams-boathouse-is-trying-to/", "https://www.businessinsider.com/canadians-are-still-unhappy-with-trump-hesitant-about-us-travels-2026-2", "https://skift.com/2026/02/25/built-for-the-leaders-defining-asias-travel-in-2026/", "https://www.hurriyetdailynews.com/antalya-braces-for-tourism-boom-with-ramadan-easter-holidays-219261", "https://www.abc.net.au/news/2026-02-26/great-ocean-road-tourism-post-bushfires-floods/106386950", "https://ritholtz.com/2026/02/transcript-hilary-allen/", "https://gizmodo.com/anthropics-claude-comes-for-knowledge-work-as-markets-freak-out-2000725881", "https://www.bankingdive.com/news/td-bank-consumer-deposits-retail-banking-digital-brand-refresh/812611/", "https://gizmodo.com/meta-gets-back-into-crypto-plans-stablecoin-integration-later-this-year-2000725733", "https://www.wired.com/story/how-to-hide-google-ai-overviews-from-your-search-results/", "https://slashdot.org/story/26/02/19/1622257/accenture-links-staff-promotions-to-use-of-ai-tools", "https://www.wired.com/story/google-gemini-task-automation-galaxy-s26-uber-doordash/", "https://gizmodo.com/ai-generated-passwords-are-apparently-quite-easy-to-crack-2000723660"];
     navigator.clipboard.writeText(urls.join("\n")).then(() => {
       const orig = btn.textContent;
       btn.textContent = "✓ Copied";
