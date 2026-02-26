@@ -160,7 +160,11 @@ If relevant, respond with ONLY this JSON (no other text):
     "A natural conversation starter with a client in this space — curious, not salesy. Something you'd actually say over coffee.",
     "A specific service opportunity this news surfaces — name the Matic service area and frame it as a question or observation, not a pitch.",
     "A forward-looking provocation — the kind of question that makes a client pause and think differently about where they're headed."
-  ]
+  ],
+  "outreach_email": {{
+    "subject": "A specific, natural subject line referencing the news — not generic, not clickbait. 8 words max.",
+    "body": "3-4 sentences addressed to [First Name] at [Company]. Open by referencing the article naturally — not 'I saw this and thought of you.' Make one sharp observation about what it signals for their business or space. Connect it to a genuine question or brief conversation. Close with a light, specific ask — not 'let me know if you want to chat.' Sound like a smart colleague, not a sales rep. No fluff, no pitch, no jargon."
+  }}
 }}
 
 Tone guide:
@@ -168,6 +172,7 @@ Tone guide:
 - Short sentences. No hedging. No padding.
 - Never use: leverage, solutions, deliverables, synergy, holistic, utilize, impactful.
 - Talking points should sound like things a person would actually say — not bullets from a deck.
+- The outreach email should be the kind of message a senior strategist would actually send — not a template, not a pitch.
 
 If NOT relevant, respond with ONLY:
 {{"relevant": false}}"""
@@ -175,7 +180,7 @@ If NOT relevant, respond with ONLY:
     try:
         message = claude.messages.create(
             model="claude-haiku-4-5-20251001",
-            max_tokens=600,
+            max_tokens=900,
             messages=[{"role": "user", "content": prompt}]
         )
         text = message.content[0].text.strip()
@@ -300,6 +305,7 @@ def generate_html(all_industry_articles, account_hits=[]):
     all_urls = [a["url"] for ind in all_industry_articles for a in ind["articles"] if a.get("url")]
 
     sections = ""
+    card_idx  = 0
     for i, ind in enumerate(all_industry_articles):
         anchor = ind["name"].lower().replace(" ", "-").replace("&", "and")
         accent = accent_colors.get(ind["name"], "#111111")
@@ -324,6 +330,26 @@ def generate_html(all_industry_articles, account_hits=[]):
                 timestamp = format_date(article.get("publishedAt", ""))
                 ts_html   = f'<span class="timestamp">{timestamp}</span>' if timestamp else ""
 
+                # Outreach email block
+                em = article.get("outreach_email")
+                if em and em.get("subject") and em.get("body"):
+                    email_id      = f"art-email-{card_idx}"
+                    email_subject = em["subject"].replace('"', "&quot;")
+                    email_body    = em["body"].replace("<", "&lt;").replace(">", "&gt;")
+                    email_html    = f"""
+                    <div class="email-block" style="--accent:{accent};">
+                      <div class="email-block-header">
+                        <div class="meta-label" style="color:var(--accent);">Outreach draft</div>
+                        <button class="copy-email-btn" onclick="copyEmail(this, '{email_subject}', '{email_id}')">Copy</button>
+                      </div>
+                      <div class="email-subject">Subject: {email_subject}</div>
+                      <div class="email-body" id="{email_id}">{email_body}</div>
+                    </div>"""
+                else:
+                    email_html = ""
+
+                card_idx += 1
+
                 cards += f"""
                 <div class="card" style="--accent:{accent};">
                   {img_html}
@@ -341,6 +367,8 @@ def generate_html(all_industry_articles, account_hits=[]):
                       <div class="meta-label">Talking points</div>
                       <ul class="talking-points">{tp_html}</ul>
                     </div>
+
+                    {email_html}
 
                     <a href="{article['url']}" target="_blank" class="read-more">
                       Read full article <span class="arrow">→</span>
@@ -1311,6 +1339,7 @@ def main():
                 article["summary"]          = result.get("summary", "")
                 article["agency_relevance"] = result.get("agency_relevance", "")
                 article["talking_points"]   = result.get("talking_points", [])
+                article["outreach_email"]   = result.get("outreach_email")
                 good_articles.append(article)
                 print(f"    ✓ {article['title'][:65]}...")
             else:
