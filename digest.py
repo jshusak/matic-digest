@@ -1,15 +1,20 @@
 import os
 import json
 import requests
+import subprocess
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import anthropic
 
 # ── Load your API keys from the .env file ─────────────────────────────────────
-load_dotenv()
+_env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+load_dotenv(_env_path, override=True)
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 NEWS_API_KEY      = os.getenv("NEWS_API_KEY")
 SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL")
+
+if not ANTHROPIC_API_KEY:
+    raise RuntimeError(f"ANTHROPIC_API_KEY not found. Looked in: {_env_path}")
 
 # ── Load your industry config ─────────────────────────────────────────────────
 with open(os.path.join(os.path.dirname(__file__), "config.json")) as f:
@@ -44,10 +49,42 @@ def fetch_articles(industry):
         return []
 
 
+# ── STEP 1b: Fetch articles from RSS feeds ───────────────────────────────────
+def fetch_from_rss(feed_url):
+    import feedparser
+    feed    = feedparser.parse(feed_url)
+    source  = feed.feed.get("title", feed_url)
+    articles = []
+    for entry in feed.entries[:ARTICLES_FETCH]:
+        # Try to extract an image from media content or enclosures
+        image = None
+        if hasattr(entry, "media_content") and entry.media_content:
+            image = entry.media_content[0].get("url")
+        elif hasattr(entry, "enclosures") and entry.enclosures:
+            image = entry.enclosures[0].get("url")
+
+        articles.append({
+            "title":       entry.get("title", ""),
+            "url":         entry.get("link", ""),
+            "description": entry.get("summary", ""),
+            "content":     entry.get("summary", ""),
+            "source":      {"name": source},
+            "urlToImage":  image,
+            "publishedAt": entry.get("published", ""),
+        })
+    return articles
+
+
 # ── STEP 2: Have Claude evaluate relevance and generate structured output ─────
 def evaluate_and_summarize(article, industry_name):
-    prompt = f"""You are a senior strategist at Matic Digital, a branding and design agency.
+    prompt = f"""You are a senior strategist at Matic Digital, a full-service branding, design, and technology agency.
 You work with clients in the {industry_name} space.
+
+Matic Digital's four service areas:
+1. Brand & Creative — brand strategy & identity, content & messaging, brand systems & guidelines, rebranding & evolution, brand activation
+2. Experience Design — personas & journey mapping, taxonomy & content strategy, design systems, UX/UI design, interaction & prototyping, user testing & validation
+3. Software & Technology — website & software development, headless & monolithic CMS, platform modernization & integrations, full-stack engineering, security & compliance, ongoing support
+4. Growth & Marketing Ops — market & audience intelligence, white space opportunity, go-to-market activation, SEO/GEO/AI visibility, content systems, lead generation & sales conversion, performance optimization
 
 Evaluate this article. Is it genuinely relevant to the {industry_name} industry?
 
@@ -64,10 +101,10 @@ If relevant, respond with ONLY this JSON (no other text):
 {{
   "relevant": true,
   "summary": "2-3 sentences. Write like a smart colleague telling you what they just read — direct, clear, no fluff. Active voice. No jargon. Say what happened and why it matters.",
-  "agency_relevance": "1-2 sentences. Written for a senior strategist at a branding agency. Not 'this presents an opportunity to leverage' — instead, say plainly what shift this signals and what it means for how clients need to think about their brand or positioning. Sound like someone who has been in the room.",
+  "agency_relevance": "2-3 sentences. What does this signal for {industry_name} clients specifically? Name which of Matic's service areas are most relevant — Brand & Creative, Experience Design, Software & Technology, or Growth & Marketing Ops — and say plainly why. Sound like someone who has been in the room, not someone writing a proposal.",
   "talking_points": [
-    "A natural conversation starter — something you'd actually say to a client over coffee. Curious, not salesy.",
-    "A sharper follow-up — surfaces a tension, risk, or opportunity this raises for their specific business or brand.",
+    "A natural conversation starter with a client in this space — curious, not salesy. Something you'd actually say over coffee.",
+    "A specific service opportunity this news surfaces — name the Matic service area and frame it as a question or observation, not a pitch.",
     "A forward-looking provocation — the kind of question that makes a client pause and think differently about where they're headed."
   ]
 }}
@@ -105,13 +142,12 @@ def generate_html(all_industry_articles):
     year      = datetime.now().strftime("%Y")
     total     = sum(len(ind["articles"]) for ind in all_industry_articles)
 
-    # One intentional accent color per industry — drawn from Matic's palette language
     accent_colors = {
-        "Renewable Energy":      "#16a34a",
-        "Health & Wellness":     "#2563eb",
-        "Marketing Tech":        "#ea580c",
-        "Tourism":               "#db2777",
-        "Fintech":               "#7c3aed",
+        "Renewable Energy":        "#16a34a",
+        "Health & Wellness":       "#2563eb",
+        "Marketing Tech":          "#ea580c",
+        "Tourism":                 "#db2777",
+        "Fintech":                 "#7c3aed",
         "Artificial Intelligence": "#0891b2",
     }
 
@@ -187,14 +223,14 @@ def generate_html(all_industry_articles):
     *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
 
     :root {{
-      --bg:          #F3F2EF;
-      --surface:     #ffffff;
-      --ink:         #0f0f0f;
-      --ink-2:       rgba(15,15,15,0.6);
-      --ink-3:       rgba(15,15,15,0.35);
-      --rule:        #E0DDD8;
-      --shadow:      0 1px 2px rgba(0,0,0,.06), 0 0 0 1px rgba(0,0,0,.05);
-      --shadow-up:   0 8px 40px rgba(0,0,0,.10), 0 0 0 1px rgba(0,0,0,.05);
+      --bg:        #F3F2EF;
+      --surface:   #ffffff;
+      --ink:       #0f0f0f;
+      --ink-2:     rgba(15,15,15,0.6);
+      --ink-3:     rgba(15,15,15,0.35);
+      --rule:      #E0DDD8;
+      --shadow:    0 1px 2px rgba(0,0,0,.06), 0 0 0 1px rgba(0,0,0,.05);
+      --shadow-up: 0 8px 40px rgba(0,0,0,.10), 0 0 0 1px rgba(0,0,0,.05);
     }}
 
     html {{ scroll-behavior: smooth; }}
@@ -208,7 +244,7 @@ def generate_html(all_industry_articles):
       font-feature-settings: "kern" 1, "liga" 1;
     }}
 
-    /* ── Header ─────────────────────────────────── */
+    /* ── Header ── */
     .site-header {{
       background: var(--ink);
       padding: 40px 56px;
@@ -217,7 +253,6 @@ def generate_html(all_industry_articles):
       justify-content: space-between;
       gap: 48px;
     }}
-
     .brand h1 {{
       font-size: 15px;
       font-weight: 600;
@@ -230,15 +265,12 @@ def generate_html(all_industry_articles):
       margin-top: 4px;
       letter-spacing: 0.3px;
     }}
-
     .header-stats {{
       display: flex;
       gap: 40px;
       align-items: flex-end;
     }}
-    .stat {{
-      text-align: right;
-    }}
+    .stat {{ text-align: right; }}
     .stat-value {{
       font-size: 36px;
       font-weight: 300;
@@ -259,7 +291,7 @@ def generate_html(all_industry_articles):
       background: rgba(255,255,255,0.1);
     }}
 
-    /* ── Nav ────────────────────────────────────── */
+    /* ── Nav ── */
     .site-nav {{
       position: sticky;
       top: 0;
@@ -272,11 +304,7 @@ def generate_html(all_industry_articles):
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
     }}
-    .nav-links {{
-      display: flex;
-      align-items: stretch;
-      gap: 0;
-    }}
+    .nav-links {{ display: flex; align-items: stretch; }}
     .site-nav a {{
       display: flex;
       align-items: center;
@@ -319,18 +347,15 @@ def generate_html(all_industry_articles):
     }}
     .notebook-btn:hover {{ opacity: 0.75; }}
 
-    /* ── Main ───────────────────────────────────── */
+    /* ── Main ── */
     main {{
       max-width: 1440px;
       margin: 0 auto;
       padding: 72px 56px 96px;
     }}
 
-    /* ── Section ────────────────────────────────── */
-    section {{
-      margin-bottom: 96px;
-    }}
-
+    /* ── Section ── */
+    section {{ margin-bottom: 96px; }}
     .section-header {{
       display: flex;
       align-items: baseline;
@@ -352,16 +377,13 @@ def generate_html(all_industry_articles):
       font-size: 14px;
       font-weight: 400;
       color: var(--accent, rgba(15,15,15,0.3));
-      letter-spacing: 0;
-      font-variant-numeric: tabular-nums;
     }}
     .section-meta {{
       font-size: 11px;
       color: var(--ink-3);
-      letter-spacing: 0.2px;
     }}
 
-    /* ── Grid ───────────────────────────────────── */
+    /* ── Grid ── */
     .grid {{
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -369,7 +391,7 @@ def generate_html(all_industry_articles):
       align-items: start;
     }}
 
-    /* ── Card ───────────────────────────────────── */
+    /* ── Card ── */
     .card {{
       background: var(--surface);
       border-radius: 3px;
@@ -393,7 +415,6 @@ def generate_html(all_industry_articles):
       height: 4px;
       width: 100%;
     }}
-
     .card-body {{
       padding: 22px 22px 24px;
       display: flex;
@@ -401,7 +422,6 @@ def generate_html(all_industry_articles):
       flex: 1;
       gap: 14px;
     }}
-
     .source {{
       font-size: 9px;
       font-weight: 600;
@@ -421,7 +441,6 @@ def generate_html(all_industry_articles):
       line-height: 1.75;
       color: var(--ink-2);
     }}
-
     .meta-block {{
       background: rgba(0,0,0,.02);
       border-left: 2px solid var(--accent, #ddd);
@@ -441,7 +460,6 @@ def generate_html(all_industry_articles):
       line-height: 1.7;
       color: var(--ink-2);
     }}
-
     .talking-points {{
       list-style: none;
       display: flex;
@@ -461,7 +479,6 @@ def generate_html(all_industry_articles):
       left: 0;
       color: var(--accent, #ccc);
     }}
-
     .read-more {{
       margin-top: auto;
       display: inline-flex;
@@ -476,10 +493,8 @@ def generate_html(all_industry_articles):
       transition: gap .2s;
     }}
     .read-more:hover {{ gap: 10px; }}
-    .read-more .arrow {{ transition: transform .2s; }}
-    .read-more:hover .arrow {{ transform: translateX(2px); }}
 
-    /* ── Footer ─────────────────────────────────── */
+    /* ── Footer ── */
     .site-footer {{
       border-top: 1px solid var(--rule);
       padding: 32px 56px;
@@ -492,12 +507,122 @@ def generate_html(all_industry_articles):
       font-size: 13px;
       font-weight: 600;
       color: var(--ink);
-      letter-spacing: -0.1px;
     }}
     .footer-meta {{
       font-size: 11px;
       color: var(--ink-3);
-      letter-spacing: 0.2px;
+    }}
+
+    /* ── Tablet (2 columns) ── */
+    @media (max-width: 1024px) {{
+      .grid {{
+        grid-template-columns: repeat(2, 1fr);
+      }}
+      .site-header {{
+        padding: 32px 32px;
+      }}
+      .stat-value {{
+        font-size: 28px;
+      }}
+      main {{
+        padding: 56px 32px 72px;
+      }}
+      .site-nav {{
+        padding: 0 32px;
+      }}
+      .site-nav a:first-child {{
+        padding-left: 16px;
+      }}
+      .site-footer {{
+        padding: 28px 32px;
+      }}
+    }}
+
+    /* ── Mobile (1 column) ── */
+    @media (max-width: 640px) {{
+      .site-header {{
+        padding: 24px 20px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+      }}
+      .header-stats {{
+        width: 100%;
+        gap: 0;
+        justify-content: space-between;
+        align-items: flex-end;
+      }}
+      .stat {{
+        text-align: left;
+        flex: 1;
+      }}
+      .stat-value {{
+        font-size: 26px;
+        letter-spacing: -1px;
+      }}
+      .stat-divider {{
+        display: none;
+      }}
+      .site-nav {{
+        padding: 0 20px;
+      }}
+      .site-nav a {{
+        padding: 0 12px;
+        font-size: 9px;
+      }}
+      .site-nav a:first-child {{
+        padding-left: 0;
+      }}
+      .nav-action {{
+        padding-left: 16px;
+      }}
+      .notebook-btn {{
+        font-size: 9px;
+        padding: 8px 12px;
+      }}
+      main {{
+        padding: 36px 20px 56px;
+      }}
+      .section-header {{
+        flex-direction: column;
+        gap: 4px;
+      }}
+      .section-title {{
+        font-size: 22px;
+        letter-spacing: -0.4px;
+      }}
+      .section-meta {{
+        font-size: 10px;
+      }}
+      .grid {{
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }}
+      .card-img {{
+        height: 200px;
+      }}
+      .card-body {{
+        padding: 18px 18px 20px;
+        gap: 12px;
+      }}
+      .headline {{
+        font-size: 16px;
+      }}
+      .summary {{
+        font-size: 14px;
+      }}
+      .meta-text {{
+        font-size: 13px;
+      }}
+      .talking-points li {{
+        font-size: 13px;
+      }}
+      .site-footer {{
+        padding: 24px 20px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }}
     }}
   </style>
 </head>
@@ -558,15 +683,119 @@ def generate_html(all_industry_articles):
 </html>"""
 
 
-# ── STEP 4: Post to Slack ─────────────────────────────────────────────────────
-def post_to_slack(url, total):
+# ── STEP 4: Wait for GitHub Pages to deploy ───────────────────────────────────
+def wait_for_deployment(url, timeout=300):
+    import time
     date_str = datetime.now().strftime("%B %d, %Y")
+    print("⏳ Waiting for GitHub Pages to deploy", end="", flush=True)
+    start = time.time()
+    while time.time() - start < timeout:
+        try:
+            r = requests.get(url, timeout=10)
+            if r.status_code == 200 and date_str in r.text:
+                print(" ✓")
+                return True
+        except requests.RequestException:
+            pass
+        print(".", end="", flush=True)
+        time.sleep(15)
+    print("\n⚠ Timed out — posting to Slack anyway.")
+    return False
+
+
+# ── STEP 5: Generate Morning Brew-style Slack briefing ───────────────────────
+def generate_slack_briefing(all_industry_articles, page_url):
+    articles_text = ""
+    for ind in all_industry_articles:
+        articles_text += f"\n{ind['name'].upper()}\n"
+        for a in ind["articles"]:
+            articles_text += f"  - {a['title']}: {a.get('summary', '')}\n"
+
+    prompt = f"""You are writing the weekly Matic Digest briefing for Slack.
+
+Matic Digital is a full-service branding, design, and technology agency with four service areas:
+1. Brand & Creative — brand strategy, identity, messaging, brand systems, rebranding
+2. Experience Design — UX/UI, journey mapping, design systems, prototyping, user testing
+3. Software & Technology — web & software development, CMS, platform modernization, full-stack engineering
+4. Growth & Marketing Ops — go-to-market, SEO/GEO/AI visibility, audience intelligence, lead generation
+
+This briefing goes to the internal strategy team before their week starts.
+
+Write a Morning Brew-style executive briefing covering this week's industry news.
+Tone: smart, conversational, a little sharp — like a well-informed colleague catching you up before a Monday meeting. Not corporate. Not stiff.
+
+Rules:
+- Open with a single punchy line that sets the tone for the week
+- One short paragraph per industry (2-3 sentences max)
+- Lead each industry section with the industry name in bold: *Renewable Energy*
+- Weave in the most interesting detail AND hint at which Matic service area it connects to — naturally, not as a pitch
+- Close with one short line pointing to the full digest
+- Use Slack markdown: *bold*, _italic_ where it adds clarity
+- No bullet points — flowing prose only
+- Total length: readable in under 90 seconds
+
+This week's articles:
+{articles_text}"""
+
+    message = claude.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=900,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return message.content[0].text.strip()
+
+
+# ── STEP 6: Post to Slack ─────────────────────────────────────────────────────
+def post_to_slack(url, total, briefing):
+    date_str = datetime.now().strftime("%B %d, %Y")
+
+    # Slack section blocks have a 3000-character limit — split if needed
+    MAX_BLOCK = 2900
+    briefing_blocks = []
+    while briefing:
+        chunk = briefing[:MAX_BLOCK]
+        # Don't cut mid-word
+        if len(briefing) > MAX_BLOCK:
+            cut = chunk.rfind("\n")
+            if cut == -1:
+                cut = chunk.rfind(" ")
+            if cut > 0:
+                chunk = briefing[:cut]
+        briefing_blocks.append({
+            "type": "section",
+            "text": {"type": "mrkdwn", "text": chunk}
+        })
+        briefing = briefing[len(chunk):].lstrip()
+
     payload = {
-        "text": (f"*Matic Digest — Week of {date_str}*\n"
-                 f"{total} articles across {len(config['industries'])} industries.\n{url}")
+        "blocks": [
+            {
+                "type": "header",
+                "text": {"type": "plain_text", "text": f"Matic Digest — {date_str}"}
+            },
+            *briefing_blocks,
+            {"type": "divider"},
+            {
+                "type": "context",
+                "elements": [
+                    {"type": "mrkdwn", "text": f"{total} articles · {len(config['industries'])} industries · Internal use only"}
+                ]
+            },
+            {
+                "type": "actions",
+                "elements": [
+                    {
+                        "type": "button",
+                        "text": {"type": "plain_text", "text": "Read Full Digest →"},
+                        "url": url,
+                        "style": "primary"
+                    }
+                ]
+            }
+        ]
     }
     r = requests.post(SLACK_WEBHOOK_URL, json=payload)
-    print("✓ Posted to Slack" if r.status_code == 200 else f"✗ Slack failed ({r.status_code})")
+    print("✓ Posted to Slack" if r.status_code == 200 else f"✗ Slack failed ({r.status_code}): {r.text}")
 
 
 # ── MAIN ──────────────────────────────────────────────────────────────────────
@@ -578,7 +807,11 @@ def main():
     for industry in config["industries"]:
         print(f"  {industry['name']} — fetching candidates...")
         candidates = fetch_articles(industry)
-        print(f"    Pulled {len(candidates)}. Evaluating relevance...")
+        for feed_url in industry.get("rss_feeds", []):
+            rss = fetch_from_rss(feed_url)
+            print(f"    + {len(rss)} articles from RSS ({feed_url})")
+            candidates.extend(rss)
+        print(f"    Pulled {len(candidates)} total candidates. Evaluating relevance...")
 
         good_articles = []
         for article in candidates:
@@ -601,14 +834,36 @@ def main():
     print("📄 Building HTML digest...")
     html = generate_html(all_industry_articles)
 
-    filename = f"digest_{datetime.now().strftime('%Y-%m-%d')}.html"
-    filepath = os.path.join(os.path.dirname(__file__), filename)
-    with open(filepath, "w") as f:
-        f.write(html)
+    dated_filename = f"digest_{datetime.now().strftime('%Y-%m-%d')}.html"
+    base_dir = os.path.dirname(os.path.abspath(__file__))
 
-    print(f"✓ Saved: {filename}")
-    print(f"✓ {total} total articles across {len(config['industries'])} industries")
-    print(f"\nOpen {filename} in your browser to preview.")
+    for filename in [dated_filename, "index.html"]:
+        with open(os.path.join(base_dir, filename), "w") as f:
+            f.write(html)
+
+    print(f"✓ Saved: {dated_filename} + index.html")
+
+    print("\n📡 Pushing to GitHub...")
+    try:
+        subprocess.run(["git", "-C", base_dir, "add", dated_filename, "index.html"], check=True)
+        subprocess.run(["git", "-C", base_dir, "commit", "-m", f"Digest {datetime.now().strftime('%Y-%m-%d')}"], check=True)
+        subprocess.run(["git", "-C", base_dir, "push", "origin", "main"], check=True)
+        print("✓ Pushed to GitHub")
+    except subprocess.CalledProcessError as e:
+        print(f"✗ Git error: {e}")
+        return
+
+    page_url = "https://jshusak.github.io/matic-digest/"
+    wait_for_deployment(page_url)
+
+    print("💬 Writing Slack briefing...")
+    briefing = generate_slack_briefing(all_industry_articles, page_url)
+
+    print("💬 Posting to Slack...")
+    post_to_slack(page_url, total, briefing)
+
+    print(f"\n✓ {total} articles across {len(config['industries'])} industries.")
+    print(f"🌐 Live at: {page_url}")
 
 
 if __name__ == "__main__":

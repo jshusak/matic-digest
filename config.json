@@ -2,7 +2,8 @@
   "industries": [
     {
       "name": "Renewable Energy",
-      "search_terms": ["solar energy", "solar trackers", "utility solar", "energy storage", "solar project"]
+      "search_terms": ["solar energy", "solar trackers", "utility solar", "energy storage", "solar project"],
+      "rss_feeds": ["https://www.canarymedia.com/rss"]
     },
     {
       "name": "Health & Wellness",
